@@ -6,7 +6,7 @@ import os
 from pygame.locals import *
 
 dimensions = (1024, 800)
-main_dir = os.path.split(os.path.abspath(__file__))[0]
+#main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 
 def load_image(name, scalex, scaley, colorkey=None):
@@ -30,14 +30,14 @@ def load_sound(name):
         def play(self): pass
     if not pygame.mixer or not pygame.mixer.get_init():
         return NoneSound()
-    print("main_dir = %s"%(main_dir))
-    fullname = os.path.join(main_dir, name)
-    print("fullname=%s"%(fullname))
+    #print("main_dir = %s"%(main_dir))
+    #fullname = os.path.join(main_dir, name)
+    #print("fullname=%s"%(fullname))
     try:
-        sound = pygame.mixer.Sound(fullname)
+        sound = pygame.mixer.Sound(name)
     except pygame.error:
-        print('Cannot load sound: %s' % fullname)
-        raise SystemExit(str(geterror()))
+        print('Cannot load sound: %s' % name)
+        raise SystemExit(str(pygame.get_error()))
     return sound
 
 class Perso(pygame.sprite.Sprite):
@@ -366,7 +366,24 @@ class Enemies(pygame.sprite.Sprite):
   def mortelle(self):
     return True
 
+class Finish(pygame.sprite.Sprite):
+  def __init__(self,long,largeur):
+    self.finish = False
+    pygame.sprite.Sprite.__init__(self)
+    self.image, self.rect = load_image(name='finish.png',scalex=largeur,scaley=long ,colorkey=-1)
 
+  def update(self):
+    self.rect.midtop = self.pos
+
+  def setpos(self,pos):
+    self.pos = pos
+    self.rect.midtop = self.pos
+
+  def mortelle(self):
+    return False
+
+  def finish(self):
+    return True
 
 class Obstacle_rebond(pygame.sprite.Sprite):
   def __init__(self,vx=10,vy=10):
@@ -472,6 +489,7 @@ class Tableau():
     print("---------------------segment:(%s)----------------------"%([self.segment]))
 
   def finish (self,reference_timer, actif,nombre_tableaux,son_fin):
+    '''
     fin_color=(232, 191, 27)
     #fin_color=(0, 0, 0)
     print("perso.x = %s :self.finishbg[0]= %s :self.finishhd[0]= %s"%(self.perso.x,self.finishbg[0],self.finishhd[0]))
@@ -481,6 +499,13 @@ class Tableau():
     pygame.display.flip()
 
     if self.finishbg[0]-10<=self.perso.x<=self.finishhd[0]+10 and self.finishhd[1]-10<=self.perso.y+100<=self.finishbg[1]+10:
+      actif+=1
+      pygame.mixer.Channel(0).play(son_fin)
+      if actif > nombre_tableaux-1 :
+        actif=0
+      jeu(reference_timer,actif)
+      '''
+    if Finish.finish == True :
       actif+=1
       pygame.mixer.Channel(0).play(son_fin)
       if actif > nombre_tableaux-1 :
