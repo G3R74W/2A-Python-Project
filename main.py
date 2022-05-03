@@ -36,3 +36,6 @@ if __name__ == "__main__":
 print('hello')
 
 ##changement test
+
+#/liste de jeu pour l'instant : piano , ton jeu,
+#/liste de jeu pour l'instant : piano , ton jeu,
