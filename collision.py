@@ -19,6 +19,7 @@ arrow = pygame.image.load('img/arrow2.png')
 sound_on = pygame.image.load('img/sound_on1.jpg')
 sound_off = pygame.image.load('img/sound_off.png')
 
+
 #mixer (music settings)
 pygame.mixer.set_num_channels(4)
 background_music = pygame.mixer.Sound('music/background_soundtrack.mp3')
@@ -30,11 +31,6 @@ canal_1 = pygame.mixer.Channel(0)
 canal_2 = pygame.mixer.Channel(1)
 canal_3 = pygame.mixer.Channel(2)
 canal_4 = pygame.mixer.Channel(3)
-
-
-canal_1.play(background_music)
-canal_1.set_volume(1)
-print('starting to play bg music')
 
 
 class button() :
@@ -64,7 +60,7 @@ class button() :
         button_rect = pygame.Rect(self.x, self.y, self.width, self.height)   
 		#check mouseover and clicked conditions
         if button_rect.collidepoint(pos) :
-            canal_4.play(button_hoover)	
+            canal_4.play(button_hoover)
             if pygame.mouse.get_pressed()[0] == 1:
                 clicked = True
                 pygame.draw.rect(window, self.click_col, button_rect)
@@ -192,15 +188,11 @@ def toggle_sound() :
                         canal_2.set_volume(1)
                         canal_3.set_volume(1)
                         Play_music = True
-                    
-
 
 # booleans
 clock = pygame.time.Clock()
-
 font = pygame.font.SysFont("comicsans", 30, True)
 clicked = False
-
 score_list = []
 Play_music = True
 
@@ -268,7 +260,13 @@ def main_squareGame() :
     #score
     score = 0
     counter = 0
+
+    #background music
+    canal_1.play(background_music)
+    canal_1.set_volume(1)
+    print('starting to play bg music')
     while run :
+
     ##########################################################################################
         # main MENU
         window.fill(dark_color)
@@ -683,3 +681,4 @@ def main_squareGame() :
 
 
     pygame.quit()
+

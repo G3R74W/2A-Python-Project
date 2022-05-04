@@ -54,8 +54,6 @@ def menu_buttons():
     Piano_HeroText = font_gameName.render("Piano Hero", 1, white)
     window.blit(Piano_HeroText, (680, 530))
 
-
-
 pygame.init()
 window = pygame.display.set_mode((800, 800))
 pygame.display.set_caption("ARCADE") #a changer ?
