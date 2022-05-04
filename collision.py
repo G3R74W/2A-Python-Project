@@ -245,7 +245,7 @@ easy = button(300,300,'EASY')
 hard = button(300,400, 'HARD')
 
 
-def main() :
+def main_squareGame() :
     run = True
     lost = True
     rules_tab = False
@@ -683,5 +683,3 @@ def main() :
 
 
     pygame.quit()
-
-main()

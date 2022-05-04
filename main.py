@@ -4,6 +4,7 @@
 import pygame
 from pygame import*
 import collision
+from collision import*
 
 
 
@@ -52,6 +53,8 @@ def menu_buttons():
     pygame.draw.line(window, line_color, (480, 480), (480, 620), line_width)
     Piano_HeroText = font_gameName.render("Piano Hero", 1, white)
     window.blit(Piano_HeroText, (680, 530))
+
+
 
 pygame.init()
 window = pygame.display.set_mode((800, 800))
