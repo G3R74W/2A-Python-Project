@@ -11,7 +11,7 @@ pygame.display.set_caption("The Square Game")
 square_icon = pygame.image.load('img/square_icon.png')
 pygame.display.set_icon(square_icon)
 
-#load help page images 
+#load help page images
 zqsd = pygame.image.load('img/zqsd2.png')
 arrow = pygame.image.load('img/arrow2.png')
 
@@ -195,35 +195,18 @@ def toggle_sound() :
                     
 
 
-    
-    
-    
-    
-
-# some booleans and other stuff
+# booleans
 clock = pygame.time.Clock()
-run = True
-food_spawn = True
+
 font = pygame.font.SysFont("comicsans", 30, True)
-obs = True
-obsY = True
 clicked = False
-play_Bool = False
-rules_tab = False
-bonus_spawn = False
-blit_bonus = False
-difficulty = False
-easy_mode = False
-hard_mode = False
-obs_hard = True
-obs_hardY = True
-lost = True
+
 score_list = []
 Play_music = True
 
 
 
-#square properties 
+#square properties
 width = 50
 height = 50
 square = pygame.Rect(375,375,width, height)
@@ -238,9 +221,7 @@ invert_bg_obs_ver = pygame.Rect(100,730,20, 70)
 you_square = pygame.Rect(250,245,25,25)
 obs_speed = 1
 
-#bonus properties 
-x_bonus = 0
-y_bonus = 0
+
 
 #colors (R,G,B)
 black = (0,0,0)
@@ -253,10 +234,9 @@ yellow = (255,255,0)
 green = (0,255,100)
 
 
-score = 0
-counter = 0
 
-#buttons 
+
+#buttons
 play = button(300, 300, 'PLAY')
 rules = button(300,400, 'HELP')
 leave = button(300,500, 'LEAVE')
@@ -265,252 +245,240 @@ easy = button(300,300,'EASY')
 hard = button(300,400, 'HARD')
 
 
+def main() :
+    run = True
+    lost = True
+    rules_tab = False
+    difficulty = False
+    play_Bool = False
+    obs = True
+    obsY = True
+    food_spawn = True
+    bonus_spawn = False
+    blit_bonus = False
+    easy_mode = False
+    hard_mode = False
+    obs_hard = True
+    obs_hardY = True
 
-while run :
-##########################################################################################
-    # main MENU
-    window.fill(dark_color)
-    text = font.render("THE SQUARE GAME", 1, white)
-    window.blit(text, (275,100))
+    # bonus properties
+    x_bonus = 0
+    y_bonus = 0
 
-    
-    i = 0
-
-
-    if lost :
-        show_highscore = open('highscore.txt',"r")
-        content = show_highscore.read()   
-        
-        main_highscore = int(content)
-        show_highscore.close()
- 
-
-
-
-    background_animation()
-    toggle_sound()
-
-    highscore_txt = font.render("HIGHSCORE :"+str(main_highscore),1,white)
-    window.blit(highscore_txt, (300, 175))
-
-
-    score_txt = font.render("SCORE :"+ str(score), 1, white)
-    window.blit(score_txt, (330,225))
+    #score
+    score = 0
+    counter = 0
+    while run :
+    ##########################################################################################
+        # main MENU
+        window.fill(dark_color)
+        text = font.render("THE SQUARE GAME", 1, white)
+        window.blit(text, (275,100))
 
 
-    if play.draw_button() :
-        
-        print("play")
-        score = 0
-        speed = 5
-        counter = 0
-        square.width = 50
-        square.height = 50
-        square.x = 375
-        square.y = 375
-        play_Bool = True
-        difficulty = True
-        lost = False
-        #open highscore file 
-        highscore_file = open('highscore.txt',"w")
-        
+        i = 0
 
-    if rules.draw_button() :
-        print("help")
-        rules_tab = True
 
-    if leave.draw_button() :
-        print("leave")
-        run = False
+        if lost :
+            show_highscore = open('highscore.txt',"r")
+            content = show_highscore.read()
 
-    pygame.display.update()
+            main_highscore = int(content)
+            show_highscore.close()
 
-    for event in pygame.event.get() :
-        if event.type == pygame.QUIT :
+
+
+
+        background_animation()
+        toggle_sound()
+
+        highscore_txt = font.render("HIGHSCORE :"+str(main_highscore),1,white)
+        window.blit(highscore_txt, (300, 175))
+
+
+        score_txt = font.render("SCORE :"+ str(score), 1, white)
+        window.blit(score_txt, (330,225))
+
+
+        if play.draw_button() :
+
+            print("play")
+            score = 0
+            speed = 5
+            counter = 0
+            square.width = 50
+            square.height = 50
+            square.x = 375
+            square.y = 375
+            play_Bool = True
+            difficulty = True
+            lost = False
+            #open highscore file
+            highscore_file = open('highscore.txt',"w")
+
+
+        if rules.draw_button() :
+            print("help")
+            rules_tab = True
+
+        if leave.draw_button() :
+            print("leave")
             run = False
-#########################################################################################
-    # HELP section
-    while rules_tab :
-        window.fill(dark_color)        
-        
-        if back.draw_button() :
-            print("back to menu")
-            rules_tab = False
-
-        pygame.draw.rect(window, light_red, (200,200,20,20))
-        food_txt = font.render("food",1,white)
-        window.blit(food_txt, (187,230))
-
-        pygame.draw.rect(window, purple, (400,200,20,20))
-        obstacle_txt = font.render("obstacle",1, white)
-        window.blit(obstacle_txt,(360,230))
-
-        pygame.draw.rect(window, green, (600,200,20,20))
-        bonus_txt = font.render("bonus",1,white)
-        window.blit(bonus_txt, (580,230))
-
-        pygame.draw.rect(window, light_color, (375,375, 50,50))
-        you_txt = font.render("you",1,white)
-        window.blit(you_txt, (380, 430))
-
-        window.blit(zqsd, (100,350))
-        window.blit(arrow, (500,350))
-
-        help_txt = font.render("HOW TO PLAY",1,white)
-        window.blit(help_txt,(325,100))
-
 
         pygame.display.update()
+
         for event in pygame.event.get() :
             if event.type == pygame.QUIT :
+                run = False
+    #########################################################################################
+        # HELP section
+        while rules_tab :
+            window.fill(dark_color)
+
+            if back.draw_button() :
+                print("back to menu")
                 rules_tab = False
-                run = False
 
-#########################################################################################
-    #choose difficulty 
-    while difficulty :
-        window.fill(dark_color)
-        bg_animation_diff()
-        difficulty_txt = font.render("DIFFICULTY",1,white)
-        window.blit(difficulty_txt,(325,100))
+            pygame.draw.rect(window, light_red, (200,200,20,20))
+            food_txt = font.render("food",1,white)
+            window.blit(food_txt, (187,230))
 
-        if easy.draw_button() :
-            print("easy mode")
-            easy_mode = True
-            difficulty = False
-        
-        if hard.draw_button() :
-            print("hard mode")
-            hard_mode = True
-            difficulty = False
+            pygame.draw.rect(window, purple, (400,200,20,20))
+            obstacle_txt = font.render("obstacle",1, white)
+            window.blit(obstacle_txt,(360,230))
 
-        pygame.display.update()
+            pygame.draw.rect(window, green, (600,200,20,20))
+            bonus_txt = font.render("bonus",1,white)
+            window.blit(bonus_txt, (580,230))
 
-        #quit
-        for event in pygame.event.get() :
-            if event.type == pygame.QUIT :
+            pygame.draw.rect(window, light_color, (375,375, 50,50))
+            you_txt = font.render("you",1,white)
+            window.blit(you_txt, (380, 430))
+
+            window.blit(zqsd, (100,350))
+            window.blit(arrow, (500,350))
+
+            help_txt = font.render("HOW TO PLAY",1,white)
+            window.blit(help_txt,(325,100))
+
+
+            pygame.display.update()
+            for event in pygame.event.get() :
+                if event.type == pygame.QUIT :
+                    rules_tab = False
+                    run = False
+
+    #########################################################################################
+        #choose difficulty
+        while difficulty :
+            window.fill(dark_color)
+            bg_animation_diff()
+            difficulty_txt = font.render("DIFFICULTY",1,white)
+            window.blit(difficulty_txt,(325,100))
+
+            if easy.draw_button() :
+                print("easy mode")
+                easy_mode = True
                 difficulty = False
-                play_Bool = False
-                run = False
 
-#########################################################################################
-    #play the game 
+            if hard.draw_button() :
+                print("hard mode")
+                hard_mode = True
+                difficulty = False
 
-    while play_Bool :
-        window.fill(dark_color)
+            pygame.display.update()
 
-        text = font.render("SCORE :" + str(score), 1, white) #Blit score on window
-        window.blit(text, (600, 50))
+            #quit
+            for event in pygame.event.get() :
+                if event.type == pygame.QUIT :
+                    difficulty = False
+                    play_Bool = False
+                    run = False
 
-        #food spawning part
-        if food_spawn :
-            x_food = random.randint(10,790)
-            y_food = random.randint(10,790)
-            food_spawn = False
+    #########################################################################################
+        #play the game
 
-        food = pygame.Rect(x_food, y_food,20,20)
+        while play_Bool :
+            window.fill(dark_color)
 
-        pygame.draw.rect(window, light_red, food )
+            text = font.render("SCORE :" + str(score), 1, white) #Blit score on window
+            window.blit(text, (600, 50))
 
-        if square.colliderect(food) :
-            canal_3.play(beep_effect)
-            food_spawn = True
-            counter += 1
+            #food spawning part
+            if food_spawn :
+                x_food = random.randint(10,790)
+                y_food = random.randint(10,790)
+                food_spawn = False
 
-        if food_spawn : 
-            print("augmentation")
-            square.width += 2
-            square.height += 2
-            score += 10
-            print("score :", score)
+            food = pygame.Rect(x_food, y_food,20,20)
 
-        # bonus spawning part
-        if counter == 10 :
-            counter = 0
-            bonus_spawn = True
-            blit_bonus = True
+            pygame.draw.rect(window, light_red, food )
 
-        if bonus_spawn :
-            x_bonus = random.randint(10,790)
-            y_bonus = random.randint(10,790)
-            bonus_spawn = False
+            if square.colliderect(food) :
+                canal_3.play(beep_effect)
+                food_spawn = True
+                counter += 1
 
-        bonus = pygame.Rect(x_bonus, y_bonus,20,20)
-        if blit_bonus :
-            pygame.draw.rect(window, green, bonus)
+            if food_spawn :
+                print("augmentation")
+                square.width += 2
+                square.height += 2
+                score += 10
+                print("score :", score)
 
-        if square.colliderect(bonus) and blit_bonus :
-            canal_2.play(bonus_sound_effect)
-            bonus_spawn = True
-            blit_bonus = False
-            counter = 0
-            
+            # bonus spawning part
+            if counter == 10 :
+                counter = 0
+                bonus_spawn = True
+                blit_bonus = True
 
-        if bonus_spawn and counter == 0: # only get bonus boost if bonus is the first to collide with square when spawned
-            print("bonus")
-            if square.height >= 200 :
-                square.height = 150
-                square.width = 150
-            if speed >= 12 :
-                speed -= 1 #max speed set to 12
+            if bonus_spawn :
+                x_bonus = random.randint(10,790)
+                y_bonus = random.randint(10,790)
+                bonus_spawn = False
 
-            square.width -= 10
-            square.height -= 10
-            speed += 1
-            print("speed :", speed)
+            bonus = pygame.Rect(x_bonus, y_bonus,20,20)
+            if blit_bonus :
+                pygame.draw.rect(window, green, bonus)
 
-            
-        ####################################
-        #obstacle 
-        #
-        # EASY MODE 
-        #
-        if obs : #X axis 
-            x_obstacle = random.randint(30,770)
-            obs_width = random.randint(20,60)
-            obs_height = random.randint(20,70)
-            obstacle = pygame.Rect(x_obstacle, 0, obs_width, obs_height)
-            obs_move = True
-            obs = False
+            if square.colliderect(bonus) and blit_bonus :
+                canal_2.play(bonus_sound_effect)
+                bonus_spawn = True
+                blit_bonus = False
+                counter = 0
 
-        if square.colliderect(obstacle) :
-            obs = True
-            obs_move = False
-            obstacle.y = -100
-            play_Bool = False
-            blit_bonus = False
-            lost = True
-            print("LOST")
-            if score > main_highscore :
-                highscore_file.write(str(score))
-                highscore_file.close()
-            else :
-                highscore_file.write(str(main_highscore))
-                highscore_file.close()
 
-            
+            if bonus_spawn and counter == 0: # only get bonus boost if bonus is the first to collide with square when spawned
+                print("bonus")
+                if square.height >= 200 :
+                    square.height = 150
+                    square.width = 150
+                if speed >= 12 :
+                    speed -= 1 #max speed set to 12
 
-        if obs_move :
-            obstacle.y += 5
-            pygame.draw.rect(window, purple, obstacle)
-            if obstacle.top <= 0 or obstacle.bottom >= 800 :
-                obs_move = False
+                square.width -= 10
+                square.height -= 10
+                speed += 1
+                print("speed :", speed)
+
+
+            ####################################
+            #obstacle
+            #
+            # EASY MODE
+            #
+            if obs : #X axis
+                x_obstacle = random.randint(30,770)
+                obs_width = random.randint(20,60)
+                obs_height = random.randint(20,70)
+                obstacle = pygame.Rect(x_obstacle, 0, obs_width, obs_height)
+                obs_move = True
+                obs = False
+
+            if square.colliderect(obstacle) :
                 obs = True
-
-        ####################################
-        if score >= 150 : #obstacle Y axis
-            if obsY : 
-                y_obstacle = random.randint(30,770)
-                obsY_width = random.randint(20,60)
-                obsY_height = random.randint(20,70)
-                obstacleY = pygame.Rect(0,y_obstacle, obsY_width, obsY_height)
-                obsY_move = True
-                obsY = False
-            
-            if square.colliderect(obstacleY) :
-                obsY = True
-                obsY_move = False
-                obstacleY.x = -100
+                obs_move = False
+                obstacle.y = -100
                 play_Bool = False
                 blit_bonus = False
                 lost = True
@@ -521,163 +489,199 @@ while run :
                 else :
                     highscore_file.write(str(main_highscore))
                     highscore_file.close()
-        
-            if obsY_move :
-                obstacleY.x += 5
-                pygame.draw.rect(window, purple, obstacleY)
-                if obstacleY.left <= 0 or obstacleY.right >= 800 :
-                    obsY_move = False
+
+
+
+            if obs_move :
+                obstacle.y += 5
+                pygame.draw.rect(window, purple, obstacle)
+                if obstacle.top <= 0 or obstacle.bottom >= 800 :
+                    obs_move = False
+                    obs = True
+
+            ####################################
+            if score >= 150 : #obstacle Y axis
+                if obsY :
+                    y_obstacle = random.randint(30,770)
+                    obsY_width = random.randint(20,60)
+                    obsY_height = random.randint(20,70)
+                    obstacleY = pygame.Rect(0,y_obstacle, obsY_width, obsY_height)
+                    obsY_move = True
+                    obsY = False
+
+                if square.colliderect(obstacleY) :
                     obsY = True
+                    obsY_move = False
+                    obstacleY.x = -100
+                    play_Bool = False
+                    blit_bonus = False
+                    lost = True
+                    print("LOST")
+                    if score > main_highscore :
+                        highscore_file.write(str(score))
+                        highscore_file.close()
+                    else :
+                        highscore_file.write(str(main_highscore))
+                        highscore_file.close()
 
-        ####################################       
-        if score >= 200 : # becomes harder 
-            if obs_hard :
-                x_hard = random.randint(30,770)
-                hard_width = random.randint(20,30)
-                hard_height = random.randint(30,80)
-                obstacleH = pygame.Rect(x_hard,800,hard_width,hard_height)
-                obs_hard_move = True
-                obs_hard = False
+                if obsY_move :
+                    obstacleY.x += 5
+                    pygame.draw.rect(window, purple, obstacleY)
+                    if obstacleY.left <= 0 or obstacleY.right >= 800 :
+                        obsY_move = False
+                        obsY = True
 
-            if square.colliderect(obstacleH) :
-                obs_hard = True
-                obs_hard_move = False
-                obstacleH.y = 1000
-                play_Bool = False
-                blit_bonus = False
-                lost = True
-                print("LOST")
-                if score > main_highscore :
-                    highscore_file.write(str(score))
-                    highscore_file.close()
-                else :
-                    highscore_file.write(str(main_highscore))
-                    highscore_file.close()
+            ####################################
+            if score >= 200 : # becomes harder
+                if obs_hard :
+                    x_hard = random.randint(30,770)
+                    hard_width = random.randint(20,30)
+                    hard_height = random.randint(30,80)
+                    obstacleH = pygame.Rect(x_hard,800,hard_width,hard_height)
+                    obs_hard_move = True
+                    obs_hard = False
 
-            if obs_hard_move :
-                obstacleH.y -= 5
-                pygame.draw.rect(window, purple, obstacleH)
-                if obstacleH.top <= 0 :
-                    obs_hard_move = False
+                if square.colliderect(obstacleH) :
                     obs_hard = True
-
-        ####################################  
-        if score >= 300 :
-            if obs_hardY :
-                y_hard = random.randint(30,770)
-                hardY_width = random.randint(30,80)
-                hardY_height = random.randint(20,30)
-                obstacleHY = pygame.Rect(800, y_hard, hardY_width, hardY_height)
-                obs_hard_moveY = True
-                obs_hardY = False
-            
-            if square.colliderect(obstacleHY) :
-                obs_hardY = True
-                obs_hard_moveY = False
-                obstacleHY.x = 1000 
-                play_Bool = False
-                blit_bonus = False
-                lost = True
-                print("LOST")
-                if score > main_highscore :
-                    highscore_file.write(str(score))
-                    highscore_file.close()
-                else :
-                    highscore_file.write(str(main_highscore))
-                    highscore_file.close()
-
-            if obs_hard_moveY :
-                obstacleHY.x -= 5
-                pygame.draw.rect(window, purple, obstacleHY)
-                if obstacleHY.left <= 0 :
-                    obs_hard_moveY = False
-                    obs_hardY = True
-        ####################################
-        #
-        # HARD MODE 
-        #
-        #################################### 
-        if hard_mode and score >= 20 :
-            if obs_hard :
-                x_hard = random.randint(30,770)
-                hard_width = random.randint(20,30)
-                hard_height = random.randint(30,80)
-                obstacleH = pygame.Rect(x_hard,800,hard_width,hard_height)
-                obs_hard_move = True
-                obs_hard = False
-
-            if square.colliderect(obstacleH) :
-                obs_hard = True
-                obs_hard_move = False
-                obstacleH.y = 1000
-                play_Bool = False
-                print("LOST")
-                lost = True
-                blit_bonus = False
-                if score > main_highscore :
-                    highscore_file.write(str(score))
-                    highscore_file.close()
-                else :
-                    highscore_file.write(str(main_highscore))
-                    highscore_file.close()
-
-            if obs_hard_move :
-                obstacleH.y -= 8
-                pygame.draw.rect(window, purple, obstacleH)
-                if obstacleH.top <= 0 :
                     obs_hard_move = False
-                    obs_hard = True
+                    obstacleH.y = 1000
+                    play_Bool = False
+                    blit_bonus = False
+                    lost = True
+                    print("LOST")
+                    if score > main_highscore :
+                        highscore_file.write(str(score))
+                        highscore_file.close()
+                    else :
+                        highscore_file.write(str(main_highscore))
+                        highscore_file.close()
 
-        # here it gets realy hard
-        if hard_mode and score >= 100 :
-            if obs_hardY :
-                y_hard = random.randint(30,770)
-                hardY_width = random.randint(30,80)
-                hardY_height = random.randint(20,30)
-                obstacleHY = pygame.Rect(800, y_hard, hardY_width, hardY_height)
-                obs_hard_moveY = True
-                obs_hardY = False
-            
-            if square.colliderect(obstacleHY) :
-                obs_hardY = True
-                obs_hard_moveY = False
-                obstacleHY.x = 1000 
-                play_Bool = False
-                blit_bonus = False
-                lost = True
-                print("LOST")
-                if score > main_highscore :
-                    highscore_file.write(str(score))
-                    highscore_file.close()
-                else :
-                    highscore_file.write(str(main_highscore))
-                    highscore_file.close()
+                if obs_hard_move :
+                    obstacleH.y -= 5
+                    pygame.draw.rect(window, purple, obstacleH)
+                    if obstacleH.top <= 0 :
+                        obs_hard_move = False
+                        obs_hard = True
 
-            if obs_hard_moveY :
-                obstacleHY.x -= 8
-                pygame.draw.rect(window, purple, obstacleHY)
-                if obstacleHY.left <= 0 :
-                    obs_hard_moveY = False
+            ####################################
+            if score >= 300 :
+                if obs_hardY :
+                    y_hard = random.randint(30,770)
+                    hardY_width = random.randint(30,80)
+                    hardY_height = random.randint(20,30)
+                    obstacleHY = pygame.Rect(800, y_hard, hardY_width, hardY_height)
+                    obs_hard_moveY = True
+                    obs_hardY = False
+
+                if square.colliderect(obstacleHY) :
                     obs_hardY = True
+                    obs_hard_moveY = False
+                    obstacleHY.x = 1000
+                    play_Bool = False
+                    blit_bonus = False
+                    lost = True
+                    print("LOST")
+                    if score > main_highscore :
+                        highscore_file.write(str(score))
+                        highscore_file.close()
+                    else :
+                        highscore_file.write(str(main_highscore))
+                        highscore_file.close()
+
+                if obs_hard_moveY :
+                    obstacleHY.x -= 5
+                    pygame.draw.rect(window, purple, obstacleHY)
+                    if obstacleHY.left <= 0 :
+                        obs_hard_moveY = False
+                        obs_hardY = True
+            ####################################
+            #
+            # HARD MODE
+            #
+            ####################################
+            if hard_mode and score >= 20 :
+                if obs_hard :
+                    x_hard = random.randint(30,770)
+                    hard_width = random.randint(20,30)
+                    hard_height = random.randint(30,80)
+                    obstacleH = pygame.Rect(x_hard,800,hard_width,hard_height)
+                    obs_hard_move = True
+                    obs_hard = False
+
+                if square.colliderect(obstacleH) :
+                    obs_hard = True
+                    obs_hard_move = False
+                    obstacleH.y = 1000
+                    play_Bool = False
+                    print("LOST")
+                    lost = True
+                    blit_bonus = False
+                    if score > main_highscore :
+                        highscore_file.write(str(score))
+                        highscore_file.close()
+                    else :
+                        highscore_file.write(str(main_highscore))
+                        highscore_file.close()
+
+                if obs_hard_move :
+                    obstacleH.y -= 8
+                    pygame.draw.rect(window, purple, obstacleH)
+                    if obstacleH.top <= 0 :
+                        obs_hard_move = False
+                        obs_hard = True
+
+            # here it gets realy hard
+            if hard_mode and score >= 100 :
+                if obs_hardY :
+                    y_hard = random.randint(30,770)
+                    hardY_width = random.randint(30,80)
+                    hardY_height = random.randint(20,30)
+                    obstacleHY = pygame.Rect(800, y_hard, hardY_width, hardY_height)
+                    obs_hard_moveY = True
+                    obs_hardY = False
+
+                if square.colliderect(obstacleHY) :
+                    obs_hardY = True
+                    obs_hard_moveY = False
+                    obstacleHY.x = 1000
+                    play_Bool = False
+                    blit_bonus = False
+                    lost = True
+                    print("LOST")
+                    if score > main_highscore :
+                        highscore_file.write(str(score))
+                        highscore_file.close()
+                    else :
+                        highscore_file.write(str(main_highscore))
+                        highscore_file.close()
+
+                if obs_hard_moveY :
+                    obstacleHY.x -= 8
+                    pygame.draw.rect(window, purple, obstacleHY)
+                    if obstacleHY.left <= 0 :
+                        obs_hard_moveY = False
+                        obs_hardY = True
 
 
-        #quit game
-        for event in pygame.event.get() :
-            if event.type == pygame.QUIT :
-                play_Bool = False
-                run = False
-                highscore_file.close()
+            #quit game
+            for event in pygame.event.get() :
+                if event.type == pygame.QUIT :
+                    play_Bool = False
+                    run = False
+                    highscore_file.close()
 
 
 
-        #pygame.draw.rect(window, light_color, square )
-        move()
+            #pygame.draw.rect(window, light_color, square )
+            move()
 
-        #update window
-        pygame.display.update()
-
-
-        clock.tick(60)
+            #update window
+            pygame.display.update()
 
 
-pygame.quit()
+            clock.tick(60)
+
+
+    pygame.quit()
+
+main()
