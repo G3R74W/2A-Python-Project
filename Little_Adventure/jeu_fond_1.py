@@ -251,6 +251,7 @@ class Fond(pygame.sprite.Sprite):
 
   def mortelle(self):
     return False
+
   def finish(self):
     return False
 
@@ -377,7 +378,7 @@ class Enemies(pygame.sprite.Sprite):
 
 class Finish(pygame.sprite.Sprite):
   def __init__(self,long,largeur):
-    self.finish = False
+    self.finis = False
     pygame.sprite.Sprite.__init__(self)
     self.image, self.rect = load_image(name='finish.png',scalex=largeur,scaley=long ,colorkey=-1)
 
@@ -456,11 +457,16 @@ class Tableau():
     self.sprite_fond=[]
     #bg=bas gauche hd=haut droite
 
-  def update(self):
+  def update(self, timer, fenetre):
     pygame.display.set_caption(self.nom)
     allsprites = self.obstacles + self.pieges + self.enemies + [self.perso]
     self.sprite_fond=pygame.sprite.RenderPlain(self.fond)
     self.sprites=pygame.sprite.RenderPlain(allsprites)
+    white = (50, 50, 50)
+    font = pygame.font.Font(None, 20)
+    text = font.render("%s  s"%(timer/1000), 1, white)
+    fenetre.blit(text, (10, 10))
+    pygame.display.flip()
 
 
   def dessin(self):
@@ -532,7 +538,7 @@ class Tableau():
 def jeu(reference_timer,actif=0):
   timer= pygame.time.get_ticks() - reference_timer
   print("###########################\n###########################\n###########################\n###########################\n")
-  print("le temps ecoule est %s ms"%(timer))
+  print("le temps ecoule est %s s"%(timer/1000))
   print("###########################\n###########################\n###########################\n###########################\n")
   mort=False
   fin=False
@@ -550,7 +556,6 @@ def jeu(reference_timer,actif=0):
   # image gameover
   game=pygame.image.load('game.jpg')
   game = pygame.transform.scale(game, dimensions)
-
   #background = pygame.Surface(fenetre.get_size())
   #background = background.convert()
   #background.fill((250, 250, 250))
@@ -580,16 +585,18 @@ def jeu(reference_timer,actif=0):
   tableaux[0].enemies[0].setpos((0,0),(0,0),(0,576),(1024,576),(1024,0),10,"trigo")
   tableaux[0].fond.append(Fond("fond.png"))
   tableaux[0].fond[0].setpos((dimensions[0]/2,0))
-  tableaux[0].obstacles.append(Finish(200,200))
-  tableaux[0].obstacles[0].setpos((230,401))
+  tableaux[0].obstacles.append(Finish(50,50))
+  tableaux[0].obstacles[0].setpos((100,200))
   tableaux[0].dim_fin.append(((0,576),(0,0),(200,0),(200,576)))
   tableaux[0].sol.append(((0, 500), (1024, 500)))
 
   tableaux[1].perso = perso
   tableaux[1].fond.append(Fond("fond.png"))
   tableaux[1].fond[0].setpos((dimensions[0]/2,0))
+  tableaux[1].obstacles.append(Finish(50,50))
+  tableaux[1].obstacles[0].setpos((100,200))
   tableaux[1].obstacles.append(Caisse())
-  tableaux[1].obstacles[0].setpos((230,401))
+  tableaux[1].obstacles[1].setpos((230,401))
   tableaux[1].pieges.append(Obstacle_rebond(vx=10,vy=7))
   tableaux[1].pieges[0].setpos((40,40))
   tableaux[1].finishbg = (0,576)
@@ -602,8 +609,10 @@ def jeu(reference_timer,actif=0):
   tableaux[2].perso = perso
   tableaux[2].fond.append(Fond("fond.png"))
   tableaux[2].fond[0].setpos((dimensions[0]/2,0))
+  tableaux[2].obstacles.append(Finish(50,50))
+  tableaux[2].obstacles[0].setpos((100,200))
   tableaux[2].obstacles.append(Caisse())
-  tableaux[2].obstacles[0].setpos((230,401))
+  tableaux[2].obstacles[1].setpos((230,401))
   tableaux[2].pieges.append(Flame())
   tableaux[2].pieges[0].setpos((800,401))
   tableaux[2].finishbg = (824,576)
@@ -616,8 +625,10 @@ def jeu(reference_timer,actif=0):
   tableaux[3].perso = perso
   tableaux[3].fond.append(Fond("fond2.png"))
   tableaux[3].fond[0].setpos((dimensions[0]/2,0))
+  tableaux[3].obstacles.append(Finish(50,50))
+  tableaux[3].obstacles[0].setpos((100,200))
   tableaux[3].obstacles.append(Caisse())
-  tableaux[3].obstacles[0].setpos((180,201))
+  tableaux[3].obstacles[1].setpos((180,201))
   #tableaux30].obstacles[1].setpos((180,476))
   tableaux[3].pieges.append(Flame())
   tableaux[3].pieges[0].setpos((900,286))
@@ -636,13 +647,18 @@ def jeu(reference_timer,actif=0):
   perso.plate()
   continu=True
   while continu :
+    white = (50, 50, 50)
+    font = pygame.font.Font(None, 20)
+    text = font.render("%s  s"%(timer/1000), 1, white)
+    fenetre.blit(text, (10, 10))
+    pygame.display.flip()
     clock.tick(60)
     space=False
     for event in pygame.event.get():
       if event.type == pygame.KEYDOWN:
         if event.key==pygame.K_UP:
           perso.deplacement(dir="haut",val=10)
-        if event.key==pygame.K_SPACE:
+        if event.key==pygame.K_SPACE and space == False:
           pygame.mixer.Channel(0).play(son_saut)
           perso.deplacement(dir="haut",val=25)
           space=True
@@ -674,14 +690,15 @@ def jeu(reference_timer,actif=0):
         perso.ay=0
         perso.setpos()
         pygame.mixer.music.play(-1)
-      elif coll:
-        collision=True
       elif finish:
         actif += 1
         pygame.mixer.Channel(0).play(son_fin)
         if actif > nombre_tableaux - 1:
           actif = 0
-        #jeu(reference_timer, actif)
+        print("")
+        jeu(reference_timer, actif)
+      elif coll:
+        collision=True
 
     if space:
       perso.c_right = perso.c_left = perso.c_top = False
@@ -690,9 +707,8 @@ def jeu(reference_timer,actif=0):
       print("aie")
       #tableaux[0].backgroundcolor=(250, 250, 250) if not tableaux[0].backgroundcolor==(250, 250, 250) else (250, 150, 150)
 
-
-
-    tableaux[actif].update()
+    timer = pygame.time.get_ticks() - reference_timer
+    tableaux[actif].update(timer, fenetre)
     tableaux[actif].dessin()
     tableaux[actif].finish(reference_timer,actif,nombre_tableaux,son_fin)
     #allsprites.update()
