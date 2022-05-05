@@ -1,8 +1,10 @@
 #-*- coding: UTF-8 -*-
 #@tobias_Wendl
 
-import pygame, sys, collision
+import pygame, sys
 from pygame import*
+import collision
+from collision import*
 
 class Button:
 	def __init__(self,text,width,height,pos,elevation):
@@ -54,24 +56,15 @@ class Button:
 			self.dynamic_elecation = self.elevation
 			self.top_color = '#475F77'
 
-"""
-def menu_icons():
-    """menu icons"""
-    # set game icons and load images
-    square_game_icon = pygame.image.load('img/square_icon.png')
-    window.blit(square_game_icon, (250, 250))
-
-    naval_battle_icon = pygame.image.load('img/ww2_ship.jpg')
-    window.blit(naval_battle_icon, (200, 500))
-
-    speed_jump_icon = pygame.image.load('img/chrono.jpg')
-    window.blit(speed_jump_icon, (500, 250))
-"""
 
 pygame.init()
 window = pygame.display.set_mode((800, 800))
-pygame.display.set_caption("ARCADE") #a changer ?
+pygame.display.set_caption("ARCADE")
 
+
+#set background image
+bg_img = pygame.image.load('img/arcade.jpg')
+window.blit(bg_img, (-350, 0))
 
 #variables
 font = pygame.font.SysFont("comicsans", 50, True)
@@ -86,13 +79,22 @@ white = (255, 255, 255)
 line_color = (179, 254, 255)
 background_color = (191, 255, 107)
 
+
+#creating different buttons
 button1 = Button('The Square Game', 200, 40, (20, 250), 5)
+button2 = Button('The naval Battle', 200, 40, (20, 500), 5)
+button3 = Button('Speed Jump', 200, 40, (580, 250), 5)
 
 clock = pygame.time.Clock()
 while run:
     text = font.render("ARCADE", 1, white)
     window.blit(text, (310, 100))
     button1.draw()
+    button2.draw()
+    button3.draw()
+
+    if button1.pressed == True:
+        main_squareGame()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
