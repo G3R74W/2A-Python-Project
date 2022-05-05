@@ -172,6 +172,7 @@ class Perso(pygame.sprite.Sprite):
     hitbox = self.rect #.inflate(-100, -100)
     mort=False
     collision=False
+    fin = False
     ciblex=cible.rect[0]
     cibley=cible.rect[1]
     ciblelong=cible.rect[2]
@@ -195,8 +196,8 @@ class Perso(pygame.sprite.Sprite):
       else:
         collision = True
         #print("colision avec %s"%(str(cible)))
-        if cible.mortelle():
-          mort=True
+        mort=cible.mortelle()
+        fin = cible.finish()
         if self.rect[0]+self.rect[2]<=ciblex+20:
   #        print("je suis a droite")
           self.c_right = True
@@ -214,7 +215,7 @@ class Perso(pygame.sprite.Sprite):
 
         #elif self.rect[1]>=cibley:
         #  print("cas 4")
-    return collision,mort
+    return collision,mort,fin
 
   def deplacement(self, dir, val):
     if dir == "droite":
@@ -250,6 +251,8 @@ class Fond(pygame.sprite.Sprite):
 
   def mortelle(self):
     return False
+  def finish(self):
+    return False
 
 
 
@@ -267,6 +270,8 @@ class Caisse(pygame.sprite.Sprite):
 
   def mortelle(self):
     return False
+  def finish(self):
+    return False
 
 
 class Flame(pygame.sprite.Sprite):
@@ -283,6 +288,8 @@ class Flame(pygame.sprite.Sprite):
 
   def mortelle(self):
     return True
+  def finish(self):
+    return False
 
 class Enemies(pygame.sprite.Sprite):
   def __init__(self):
@@ -365,6 +372,8 @@ class Enemies(pygame.sprite.Sprite):
 
   def mortelle(self):
     return True
+  def finish(self):
+    return False
 
 class Finish(pygame.sprite.Sprite):
   def __init__(self,long,largeur):
@@ -419,6 +428,8 @@ class Obstacle_rebond(pygame.sprite.Sprite):
 
   def mortelle(self):
     return True
+  def finish(self):
+    return False
 
 
 
@@ -505,13 +516,14 @@ class Tableau():
         actif=0
       jeu(reference_timer,actif)
       '''
+    '''
     if Finish.finish == True :
       actif+=1
       pygame.mixer.Channel(0).play(son_fin)
       if actif > nombre_tableaux-1 :
         actif=0
       jeu(reference_timer,actif)
-
+    '''
 
 
 #self.finishbg
@@ -568,10 +580,8 @@ def jeu(reference_timer,actif=0):
   tableaux[0].enemies[0].setpos((0,0),(0,0),(0,576),(1024,576),(1024,0),10,"trigo")
   tableaux[0].fond.append(Fond("fond.png"))
   tableaux[0].fond[0].setpos((dimensions[0]/2,0))
-  tableaux[0].finishbg = (0,576)
-  tableaux[0].finishhd = (200,0)
-  tableaux[0].finishhg = (0,0)
-  tableaux[0].finishbd = (200,576)
+  tableaux[0].obstacles.append(Finish(200,200))
+  tableaux[0].obstacles[0].setpos((230,401))
   tableaux[0].dim_fin.append(((0,576),(0,0),(200,0),(200,576)))
   tableaux[0].sol.append(((0, 500), (1024, 500)))
 
@@ -650,7 +660,7 @@ def jeu(reference_timer,actif=0):
     perso.c_right = perso.c_left = perso.c_top = False
 
     for obstacle in obstacles:
-      coll,mort = perso.colision(obstacle)
+      coll,mort,finish = perso.colision(obstacle)
       print("coll,mort = %d/%d" %(coll,mort))
       if mort:
         pygame.mixer.Channel(0).play(son_mort)
@@ -666,6 +676,12 @@ def jeu(reference_timer,actif=0):
         pygame.mixer.music.play(-1)
       elif coll:
         collision=True
+      elif finish:
+        actif += 1
+        pygame.mixer.Channel(0).play(son_fin)
+        if actif > nombre_tableaux - 1:
+          actif = 0
+        #jeu(reference_timer, actif)
 
     if space:
       perso.c_right = perso.c_left = perso.c_top = False
