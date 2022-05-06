@@ -646,6 +646,7 @@ def jeu(reference_timer,actif=0):
   perso.sol=tableaux[actif].segment
   perso.plate()
   continu=True
+  space = False
   while continu :
     white = (50, 50, 50)
     font = pygame.font.Font(None, 20)
@@ -653,25 +654,26 @@ def jeu(reference_timer,actif=0):
     fenetre.blit(text, (10, 10))
     pygame.display.flip()
     clock.tick(60)
-    space=False
     for event in pygame.event.get():
       if event.type == pygame.KEYDOWN:
-        if event.key==pygame.K_UP:
-          perso.deplacement(dir="haut",val=10)
+        if event.key==pygame.K_UP and space == False:
+          perso.deplacement(dir="haut",val=15)
+          space = True
         if event.key==pygame.K_SPACE and space == False:
           pygame.mixer.Channel(0).play(son_saut)
-          perso.deplacement(dir="haut",val=25)
+          perso.deplacement(dir="haut",val=15)
           space=True
         if event.key==pygame.K_RIGHT:
-          perso.deplacement(dir="droite",val=3)
+          perso.deplacement(dir="droite",val=2)
         if event.key==pygame.K_LEFT:
-          perso.deplacement(dir="gauche",val=3)
+          perso.deplacement(dir="gauche",val=2)
         #if event.key==pygame.K_DOWN:
         #  tableaux[actif].finish(actif,nombre_tableaux)
       if event.type == QUIT:
         pygame.quit()
 
-
+    if perso.ay == 0:
+      space = False
     collision = False
     perso.c_right = perso.c_left = perso.c_top = False
 
@@ -694,9 +696,15 @@ def jeu(reference_timer,actif=0):
         actif += 1
         pygame.mixer.Channel(0).play(son_fin)
         if actif > nombre_tableaux - 1:
-          actif = 0
-        print("")
-        jeu(reference_timer, actif)
+          END(timer)
+          pygame.quit()
+
+
+
+
+        else:
+          print("")
+          jeu(reference_timer, actif)
       elif coll:
         collision=True
 
@@ -827,7 +835,26 @@ def menu():
       else:
         souris_sur_quit=False
 
+def END(timer):
+  pygame.init()
+  fenetre = pygame.display.set_mode(dimensions)
+  pygame.display.set_caption("VIDE")
+  while True:
+      for event in pygame.event.get():
+          if event.type == pygame.QUIT:
+              pygame.quit()
+          if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+              pygame.quit()
 
+      grey = (50, 50, 50)
+      white = (255, 255, 255)
+      fenetre.fill(white)
+      font = pygame.font.Font(None, 50)
+      text1 = font.render("Bravo vous avez terminé en %s seconde " % (timer / 1000), 1, grey)
+      fenetre.blit(text1, (150, 300))
+      text2 = font.render("votre record est 0,000 seconde", 1, grey)
+      fenetre.blit(text2, (200, 400))
+      pygame.display.flip()
 
 if __name__ == '__main__':
     #main(0)
