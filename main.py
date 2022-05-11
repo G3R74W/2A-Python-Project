@@ -3,64 +3,19 @@
 
 import pygame, sys
 from pygame import*
+import Button
+from Button import*
 import collision
 from collision import*
-
-class Button:
-	def __init__(self,text,width,height,pos,elevation):
-
-		gui_font = pygame.font.Font(None, 30)
-		#Core attributes
-		self.pressed = False
-		self.elevation = elevation
-		self.dynamic_elecation = elevation
-		self.original_y_pos = pos[1]
-
-		# top rectangle
-		self.top_rect = pygame.Rect(pos,(width,height))
-		self.top_color = '#475F77'
-
-		# bottom rectangle
-		self.bottom_rect = pygame.Rect(pos,(width,height))
-		self.bottom_color = '#354B5E'
-		#text
-		self.text_surf = gui_font.render(text,True,'#FFFFFF')
-		self.text_rect = self.text_surf.get_rect(center = self.top_rect.center)
-
-	def draw(self):
-		# elevation logic
-		self.top_rect.y = self.original_y_pos - self.dynamic_elecation
-		self.text_rect.center = self.top_rect.center
-
-		self.bottom_rect.midtop = self.top_rect.midtop
-		self.bottom_rect.height = self.top_rect.height + self.dynamic_elecation
-
-		pygame.draw.rect(window, self.bottom_color, self.bottom_rect, border_radius = 12)
-		pygame.draw.rect(window,self.top_color, self.top_rect,border_radius = 12)
-		window.blit(self.text_surf, self.text_rect)
-		self.check_click()
-
-	def check_click(self):
-		mouse_pos = pygame.mouse.get_pos()
-		if self.top_rect.collidepoint(mouse_pos):
-			self.top_color = '#D74B4B'
-			if pygame.mouse.get_pressed()[0]:
-				self.dynamic_elecation = 0
-				self.pressed = True
-			else:
-				self.dynamic_elecation = self.elevation
-				if self.pressed == True:
-					print('click')
-					self.pressed = False
-		else:
-			self.dynamic_elecation = self.elevation
-			self.top_color = '#475F77'
+import NavalBattle
+from NavalBattle import*
 
 def window_init():
 	# initialisation pygame
 	pygame.init()
 	window = pygame.display.set_mode((800, 800))
 	pygame.display.set_caption("ARCADE")
+
 def window_creation():
 
 	#set background image
@@ -99,17 +54,29 @@ def main():
 
 	while run:
 		#display buttons on the screen
-		button1.draw()
-		button2.draw()
-		button3.draw()
-		button4.draw()
-		button5.draw()
+		button1.draw(window)
+		button2.draw(window)
+		button3.draw(window)
+		button4.draw(window)
+		button5.draw(window)
 
 		if button1.pressed == True:
 			print("starting square game")
 			main_squareGame()
 			button1.pressed = False
 			window_creation()
+
+		if button2.pressed == True:
+			print("starting naval battle")
+			main_NavalBattle()
+			button2.pressed = False
+			window_creation()
+
+		if button3.pressed == True:
+			print("starting speed jump")
+
+		if button4.pressed == True:
+			print("starting piano hero")
 
 		if button5.pressed == True:
 			#quit
@@ -121,6 +88,5 @@ def main():
 		pygame.display.update()
 		clock.tick(60)
 	pygame.quit()
-
 
 main()
