@@ -321,6 +321,9 @@ def main_squareGame() :
 
         if leave.draw_button() :
             print("leave")
+            canal_1.set_volume(0)
+            canal_2.set_volume(0)
+            canal_3.set_volume(0)
             run = False
 
         pygame.display.update()

@@ -5,6 +5,19 @@ from pygame import*
 import Button
 from Button import*
 
+class piece:
+    def __init__(self, type):
+        color = (102, 95, 122)
+        if type == "porte avion":
+            self.size = 5
+
+        elif type == "croiseur":
+            self.size = 4
+        elif type == "contre torpilleur":
+            self.size = 3
+        elif type == "torpilleur":
+            self.size = 2
+
 def window_init():
     # initialisation pygame
     pygame.init()
@@ -29,7 +42,9 @@ def main_NavalBattle():
     button1 = Button_creation()
 
     run = True
+    clock = pygame.time.Clock()
     while run:
+
         #affichage du boutton sur la fenetre
         button1.draw(window)
 
@@ -37,6 +52,7 @@ def main_NavalBattle():
             print("back to main menu")
             button1.pressed = False
             run = False
+            clock.tick(1)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

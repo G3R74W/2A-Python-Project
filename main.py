@@ -26,6 +26,10 @@ def window_creation():
 	frame = pygame.image.load('img/cadre.png')
 	window.blit(frame, (40, 150))
 
+	#set logo
+	logo = pygame.image.load('img/logo.PNG')
+	window.blit(logo, (100, 0))
+
 def button_creation():
 	# creating different buttons
 	button1 = Button('The Square Game', 200, 40, (310, 300), 5)
