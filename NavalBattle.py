@@ -4,6 +4,7 @@ import pygame
 from pygame import*
 import Button
 from Button import*
+import time
 
 class piece:
     def __init__(self, type):
@@ -28,8 +29,10 @@ def window_init():
     return window
 
 def Button_creation():
-    button1 = Button('Back to menu', 200, 40, (400, 300), 5)
-    return button1
+    button1 = Button('Back to menu', 200, 40, (290, 540), 5)
+    button2 = Button('Play', 200, 40, (290, 400), 5)
+    button3 = Button('How to play', 200, 40, (290, 470), 5)
+    return button1, button2, button3
 
 def main_NavalBattle():
 
@@ -39,20 +42,34 @@ def main_NavalBattle():
     window_init()
 
     #creation du boutton de retour au menu
-    button1 = Button_creation()
+    button1, button2, button3 = Button_creation()
 
     run = True
+    menu = True
     clock = pygame.time.Clock()
+    logo = pygame.image.load('img/logoNV.PNG')
     while run:
+        while menu:
+            window.blit(logo, (245, 70))
+            #affichage du boutton sur la fenetre
+            button1.draw(window)
+            button2.draw(window)
+            button3.draw(window)
 
-        #affichage du boutton sur la fenetre
-        button1.draw(window)
+            if button1.pressed == True :
+                print("back to main menu")
+                time.sleep(0.2)
+                button1.pressed = False
+                run = False
+                menu = False
 
-        if button1.pressed == True :
-            print("back to main menu")
-            button1.pressed = False
-            run = False
-            clock.tick(1)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    menu = False
+
+            pygame.display.update()
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

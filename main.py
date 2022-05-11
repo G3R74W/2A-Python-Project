@@ -9,6 +9,7 @@ import collision
 from collision import*
 import NavalBattle
 from NavalBattle import*
+import time
 
 def window_init():
 	# initialisation pygame
@@ -66,12 +67,14 @@ def main():
 
 		if button1.pressed == True:
 			print("starting square game")
+			time.sleep(0.2)
 			main_squareGame()
 			button1.pressed = False
 			window_creation()
 
 		if button2.pressed == True:
 			print("starting naval battle")
+			time.sleep(0.2)
 			main_NavalBattle()
 			button2.pressed = False
 			window_creation()
