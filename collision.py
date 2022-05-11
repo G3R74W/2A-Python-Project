@@ -680,5 +680,5 @@ def main_squareGame() :
             clock.tick(60)
 
 
-    pygame.quit()
+    #pygame.quit()
 

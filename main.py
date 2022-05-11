@@ -35,7 +35,7 @@ class Button:
 		self.bottom_rect.midtop = self.top_rect.midtop
 		self.bottom_rect.height = self.top_rect.height + self.dynamic_elecation
 
-		pygame.draw.rect(window,self.bottom_color, self.bottom_rect,border_radius = 12)
+		pygame.draw.rect(window, self.bottom_color, self.bottom_rect, border_radius = 12)
 		pygame.draw.rect(window,self.top_color, self.top_rect,border_radius = 12)
 		window.blit(self.text_surf, self.text_rect)
 		self.check_click()
@@ -56,14 +56,12 @@ class Button:
 			self.dynamic_elecation = self.elevation
 			self.top_color = '#475F77'
 
-
-def window_creation():
-
-	#initialisation pygame
+def window_init():
+	# initialisation pygame
 	pygame.init()
 	window = pygame.display.set_mode((800, 800))
 	pygame.display.set_caption("ARCADE")
-
+def window_creation():
 
 	#set background image
 	bg_img = pygame.image.load('img/arcade.jpg')
@@ -73,52 +71,56 @@ def window_creation():
 	frame = pygame.image.load('img/cadre.png')
 	window.blit(frame, (40, 150))
 
-#variables
-font = pygame.font.Font(None, 70)
+def button_creation():
+	# creating different buttons
+	button1 = Button('The Square Game', 200, 40, (310, 300), 5)
+	button2 = Button('The naval Battle', 200, 40, (310, 370), 5)
+	button3 = Button('Speed Jump', 200, 40, (310, 440), 5)
+	button4 = Button('Piano Hero', 200, 40, (310, 510), 5)
+	button5 = Button('Quit', 200, 40, (310, 580), 5)
+	return button1, button2, button3, button4, button5
+
+def main():
+	#variables
+	font = pygame.font.Font(None, 70)
+	clock = pygame.time.Clock()
+
+	#booleans
+	run = True
+
+	#colors (RGB)
+	white = (255, 255, 255)
+	line_color = (179, 254, 255)
+	background_color = (191, 255, 107)
+
+	window_init()
+	button1, button2, button3, button4, button5 = button_creation()
+	window_creation()
+
+	while run:
+		#display buttons on the screen
+		button1.draw()
+		button2.draw()
+		button3.draw()
+		button4.draw()
+		button5.draw()
+
+		if button1.pressed == True:
+			print("starting square game")
+			main_squareGame()
+			button1.pressed = False
+			window_creation()
+
+		if button5.pressed == True:
+			#quit
+			run = False
+
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				run = False
+		pygame.display.update()
+		clock.tick(60)
+	pygame.quit()
 
 
-#booleans
-run = True
-
-#colors (RGB)
-white = (255, 255, 255)
-line_color = (179, 254, 255)
-background_color = (191, 255, 107)
-
-
-#creating different buttons
-button1 = Button('The Square Game', 200, 40, (310, 300), 5)
-button2 = Button('The naval Battle', 200, 40, (310, 370), 5)
-button3 = Button('Speed Jump', 200, 40, (310, 440), 5)
-button4 = Button('Piano Hero', 200, 40, (310, 510), 5)
-button5 = Button('Quit', 200, 40, (310, 580), 5)
-
-
-clock = pygame.time.Clock()
-
-window_creation()
-while run:
-    text = font.render("ARCADE", 1, white)
-    window.blit(text, (310, 100))
-
-	#display buttons on the screen
-    button1.draw()
-    button2.draw()
-    button3.draw()
-    button4.draw()
-    button5.draw()
-
-    if button1.pressed == True:
-        main_squareGame()
-
-    if button5.pressed == True:
-		#quit
-        run = False
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-    pygame.display.update()
-    clock.tick(60)
-pygame.quit()
-
+main()
