@@ -63,7 +63,7 @@ class Button:
 
 
 def load_image(name, scalex, scaley, colorkey=None):
-    image = pygame.image.load("img\ "+name)
+    image = pygame.image.load("img/%s"%(name))
     image = image.convert()
     print("image <%s> rect %s" % (name, image.get_rect()))
     bx, by, dimx, dimy = image.get_rect()
@@ -614,15 +614,15 @@ def jeu(reference_timer, actif=0):
     fenetre = pygame.display.set_mode(dimensions)
     pygame.display.set_caption("VIDE")
     # on charge la musique pluis on la joue
-    pygame.mixer.music.load("musique.mp3")
+    pygame.mixer.music.load("sound/musique.mp3")
     pygame.mixer.music.play(-1)
-    son_saut = pygame.mixer.Sound('saut2.wav')
-    son_mort = pygame.mixer.Sound('mort(2).wav')
-    son_fin = pygame.mixer.Sound('0236.wav')
+    son_saut = pygame.mixer.Sound('sound/saut2.wav')
+    son_mort = pygame.mixer.Sound('sound/mort(2).wav')
+    son_fin = pygame.mixer.Sound('sound/0236.wav')
     # on cache la souris
     pygame.mouse.set_visible(0)
     # image gameover
-    game = pygame.image.load('game.jpg')
+    game = pygame.image.load('img/game.jpg')
     game = pygame.transform.scale(game, dimensions)
     # background = pygame.Surface(fenetre.get_size())
     # background = background.convert()
@@ -804,7 +804,7 @@ def menu_jeu():
     fenetre = pygame.display.set_mode(dimensions2)
     Font = pygame.font.SysFont("comicsansms", 76)
     font = pygame.font.SysFont("comicsansms", 42)
-    pygame.mixer.music.load("musique.mp3")
+    pygame.mixer.music.load("sound/musique.mp3")
     pygame.mixer.music.play(-1)
     pygame.mouse.set_visible(1)
 
