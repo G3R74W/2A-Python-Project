@@ -737,7 +737,7 @@ def jeu(reference_timer, actif=0):
                 # if event.key==pygame.K_DOWN:
                 #  tableaux[actif].finish(actif,nombre_tableaux)
             if event.type == QUIT:
-                pygame.quit()
+                continu = False
 
         if perso.ay == 0:
             space = False
@@ -797,7 +797,7 @@ def jeu(reference_timer, actif=0):
         ##pygame.draw.arc(fenetre, Color_line, fenetre.get_rect(), 0, pi)
         # allsprites.draw(fenetre)
         # pygame.display.flip()
-
+    pygame.quit()
 
 def menu_jeu():
     pygame.init()
@@ -830,50 +830,50 @@ def menu_jeu():
                 run = False
 
         fenetre.fill((255, 255, 255))
-        fenetre.blit(text, (512 - text.get_width() // 2, 140 - text.get_height() // 2))
+        fenetre.blit(text, (400 - text.get_width() // 2, 140 - text.get_height() // 2))
         if souris_sur_play and musique == False:
-            fenetre.blit(textr1, (512 - textr1.get_width() // 2, 280 - textr1.get_height() // 2))
-            fenetre.blit(text2, (512 - text2.get_width() // 2, 440 - text2.get_height() // 2))
-            fenetre.blit(text3, (512 - text3.get_width() // 2, 360 - text3.get_height() // 2))
+            fenetre.blit(textr1, (400 - textr1.get_width() // 2, 280 - textr1.get_height() // 2))
+            fenetre.blit(text2, (400 - text2.get_width() // 2, 440 - text2.get_height() // 2))
+            fenetre.blit(text3, (400 - text3.get_width() // 2, 360 - text3.get_height() // 2))
         elif souris_sur_play and musique == True:
-            fenetre.blit(textr1, (512 - textr1.get_width() // 2, 280 - textr1.get_height() // 2))
-            fenetre.blit(text2, (512 - text2.get_width() // 2, 440 - text2.get_height() // 2))
-            fenetre.blit(text4, (512 - text4.get_width() // 2, 360 - text4.get_height() // 2))
+            fenetre.blit(textr1, (400 - textr1.get_width() // 2, 280 - textr1.get_height() // 2))
+            fenetre.blit(text2, (400 - text2.get_width() // 2, 440 - text2.get_height() // 2))
+            fenetre.blit(text4, (400 - text4.get_width() // 2, 360 - text4.get_height() // 2))
         elif souris_sur_quit and musique == False:
-            fenetre.blit(text1, (512 - text1.get_width() // 2, 280 - text1.get_height() // 2))
-            fenetre.blit(textr2, (512 - textr2.get_width() // 2, 440 - textr2.get_height() // 2))
-            fenetre.blit(text3, (512 - text3.get_width() // 2, 360 - text3.get_height() // 2))
+            fenetre.blit(text1, (400 - text1.get_width() // 2, 280 - text1.get_height() // 2))
+            fenetre.blit(textr2, (400 - textr2.get_width() // 2, 440 - textr2.get_height() // 2))
+            fenetre.blit(text3, (400 - text3.get_width() // 2, 360 - text3.get_height() // 2))
         elif souris_sur_quit and musique == True:
-            fenetre.blit(text1, (512 - text1.get_width() // 2, 280 - text1.get_height() // 2))
-            fenetre.blit(textr2, (512 - textr2.get_width() // 2, 440 - textr2.get_height() // 2))
-            fenetre.blit(text4, (512 - text4.get_width() // 2, 360 - text4.get_height() // 2))
+            fenetre.blit(text1, (400 - text1.get_width() // 2, 280 - text1.get_height() // 2))
+            fenetre.blit(textr2, (400 - textr2.get_width() // 2, 440 - textr2.get_height() // 2))
+            fenetre.blit(text4, (400 - text4.get_width() // 2, 360 - text4.get_height() // 2))
         elif souris_sur_musique and musique == False:
-            fenetre.blit(text1, (512 - text1.get_width() // 2, 280 - text1.get_height() // 2))
-            fenetre.blit(text2, (512 - text2.get_width() // 2, 440 - text2.get_height() // 2))
-            fenetre.blit(textr3, (512 - textr3.get_width() // 2, 360 - textr3.get_height() // 2))
+            fenetre.blit(text1, (400 - text1.get_width() // 2, 280 - text1.get_height() // 2))
+            fenetre.blit(text2, (400 - text2.get_width() // 2, 440 - text2.get_height() // 2))
+            fenetre.blit(textr3, (400 - textr3.get_width() // 2, 360 - textr3.get_height() // 2))
         elif souris_sur_musique and musique == True:
-            fenetre.blit(text1, (512 - text1.get_width() // 2, 280 - text1.get_height() // 2))
-            fenetre.blit(text2, (512 - text2.get_width() // 2, 440 - text2.get_height() // 2))
-            fenetre.blit(textr4, (512 - textr4.get_width() // 2, 360 - textr4.get_height() // 2))
+            fenetre.blit(text1, (400 - text1.get_width() // 2, 280 - text1.get_height() // 2))
+            fenetre.blit(text2, (400 - text2.get_width() // 2, 440 - text2.get_height() // 2))
+            fenetre.blit(textr4, (400 - textr4.get_width() // 2, 360 - textr4.get_height() // 2))
         elif musique == True:
-            fenetre.blit(text1, (512 - text1.get_width() // 2, 280 - text1.get_height() // 2))
-            fenetre.blit(text2, (512 - text2.get_width() // 2, 440 - text2.get_height() // 2))
-            fenetre.blit(text4, (512 - text4.get_width() // 2, 360 - text4.get_height() // 2))
+            fenetre.blit(text1, (400 - text1.get_width() // 2, 280 - text1.get_height() // 2))
+            fenetre.blit(text2, (400 - text2.get_width() // 2, 440 - text2.get_height() // 2))
+            fenetre.blit(text4, (400 - text4.get_width() // 2, 360 - text4.get_height() // 2))
         elif musique == False:
-            fenetre.blit(text1, (512 - text1.get_width() // 2, 280 - text1.get_height() // 2))
-            fenetre.blit(text2, (512 - text2.get_width() // 2, 440 - text2.get_height() // 2))
-            fenetre.blit(text3, (512 - text3.get_width() // 2, 360 - text3.get_height() // 2))
+            fenetre.blit(text1, (400 - text1.get_width() // 2, 280 - text1.get_height() // 2))
+            fenetre.blit(text2, (400 - text2.get_width() // 2, 440 - text2.get_height() // 2))
+            fenetre.blit(text3, (400 - text3.get_width() // 2, 360 - text3.get_height() // 2))
         ButtonPlay = pygame.draw.rect(fenetre, (255, 255, 255),
-                                      pygame.Rect(512 - text1.get_width() // 2, 280 - text1.get_height() // 2,
+                                      pygame.Rect(400 - text1.get_width() // 2, 280 - text1.get_height() // 2,
                                                   text1.get_width(), text1.get_height()), 1)
         ButtonQuit = pygame.draw.rect(fenetre, (255, 255, 255),
-                                      pygame.Rect(512 - text2.get_width() // 2, 440 - text2.get_height() // 2,
+                                      pygame.Rect(400 - text2.get_width() // 2, 440 - text2.get_height() // 2,
                                                   text2.get_width(), text2.get_height()), 1)
         ButtonMusique = pygame.draw.rect(fenetre, (255, 255, 255),
-                                         pygame.Rect(512 - text3.get_width() // 2, 360 - text3.get_height() // 2,
+                                         pygame.Rect(400 - text3.get_width() // 2, 360 - text3.get_height() // 2,
                                                      text3.get_width(), text3.get_height()), 1)
         ButtonMusique1 = pygame.draw.rect(fenetre, (255, 255, 255),
-                                          pygame.Rect(512 - text4.get_width() // 2, 360 - text4.get_height() // 2,
+                                          pygame.Rect(400 - text4.get_width() // 2, 360 - text4.get_height() // 2,
                                                       text4.get_width(), text3.get_height()), 1)
         pygame.display.flip()
 
@@ -908,7 +908,7 @@ def menu_jeu():
             souris_sur_quit = True
             pygame.display.flip()
             if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                pygame.quit()
+                run = False
         else:
             souris_sur_quit = False
     pygame.quit()
