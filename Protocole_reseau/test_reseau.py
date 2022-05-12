@@ -54,8 +54,8 @@ def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.settimeout(0)
     try:
-        # on cree une socket vers une adresse qui n'a pas d'importance
-        # puis on chope le premier element du nom de la socket
+        # on cree une socket vers une adresse qui n'a pas d' importance
+        # puis on obtient le premier element du nom de la socket
         # cela nous donne notre IP
         s.connect(('10.255.255.255', 1))
         IP = s.getsockname()[0]
@@ -78,7 +78,7 @@ def list_host (IP):
     reseau += list_IP[i] + "."
   list_host = []
   print("RESEAU = %s"%(reseau))
-  for j in range (145,155):
+  for j in range (145,147):
     host = reseau + "%s"%(j)
     list_host.append(host)
   return list_host
@@ -155,6 +155,6 @@ def test_ping (list_host):
 if __name__=='__main__':
   IP = get_ip()
   print(IP)
-  #list_host = list_host(IP)
+  list_host = list_host(IP)
   ##print(list_host)
-  #test_ping(list_host)
+  test_ping(list_host)
