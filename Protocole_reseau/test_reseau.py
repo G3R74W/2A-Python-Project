@@ -5,7 +5,7 @@ import threading
 import sys
 import ping3 as ping
 
-HOST = "192.168.161.148"  # Standard loopback interface address (localhost)
+HOST = "192.168.43.89"  # Standard loopback interface address (localhost)
 PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
 
 def server_echo():
