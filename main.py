@@ -56,7 +56,6 @@ def main():
 	window_init()
 	button1, button2, button3, button4, button5 = button_creation()
 	window_creation()
-
 	while run:
 		#display buttons on the screen
 		button1.draw(window)
@@ -67,7 +66,7 @@ def main():
 
 		if button1.pressed == True:
 			print("starting square game")
-			time.sleep(0.2)
+			time.sleep(0.4)
 			main_squareGame()
 			button1.pressed = False
 			window_creation()

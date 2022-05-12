@@ -6,33 +6,105 @@ import Button
 from Button import*
 import time
 
-class piece:
-    def __init__(self, type):
-        color = (102, 95, 122)
+class Piece:
+
+    def __init__(self, xPos, yPos):
+        self.size = 0
+        self.player = 0
+        self.xPos = xPos
+        self.yPos = yPos
+
+    def position(self, xPos, yPos):
+
+        """
         if type == "porte avion":
             self.size = 5
 
         elif type == "croiseur":
             self.size = 4
+
         elif type == "contre torpilleur":
             self.size = 3
+
         elif type == "torpilleur":
-            self.size = 2
+            self.size = 2"""
+
+class Grid():
+    def __init__(self, xPos, yPos):
+        self.size = (10, 10)
+        self.grid = [[0] * self.size[0]] * self.size[1]
+        self.pos = (xPos, yPos)
+        self.listRect = []
+
+    def display(self, window):
+        """affichage de la grille de jeu
+            Les 0 représentent une case vide
+            Les 1 représente une case avec un navire
+            Les 2 représentent une case vide touchée
+            Les 3 representent une case avec un navire touchée"""
+
+        #for i in range(self.size[1]):
+            #affichage console
+            #print(self.grid[0])
+
+        yPos, q = 0, 0
+
+        for j in range(self.size[0]):
+            xPos = 0
+            for k in range(self.size[1]):
+                switcher = {
+                    0: (255, 255, 255),
+                    1: (118, 130, 127),
+                    2: (0, 0, 0),
+                    3: (255, 0, 0)
+                }
+
+                self.listRect.append(pygame.Rect(xPos, yPos, 30, 30))
+                color = switcher.get(self.grid[j][k], (0, 255, 0))
+                pygame.draw.rect(window, switcher.get(self.grid[j][k], (0, 255, 0)), self.listRect[q])
+                xPos += 31
+                q += 1
+            yPos += 31
+        pygame.display.update()
+        return color
+
+    def placement(self):
+        """permet de placer les navires sur la grille"""
+        mouseX, mouseY = pygame.mouse.get_pos()
+        for event in pygame.event.get():
+            if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                print("clickkkk")
+        for i in self.listRect[0]:
+            if self.listRect[i].collidepoint((mouseX, mouseY)):
+                for event in pygame.event.get():
+                    if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                        print("grid click")
+
+        #print((mouseX, mouseY))
+
+def window_refresh(window):
+    bg_image = pygame.image.load('img/blue.jpg')
+    window.blit(bg_image, (0, 0))
 
 def window_init():
     # initialisation pygame
     pygame.init()
     window = pygame.display.set_mode((800, 800))
     pygame.display.set_caption("THE NAVAL BATTLE")
-    bg_image = pygame.image.load('img/blue.jpg')
-    window.blit(bg_image, (0, 0))
+    window_refresh(window)
     return window
 
 def Button_creation():
-    button1 = Button('Back to menu', 200, 40, (290, 540), 5)
-    button2 = Button('Play', 200, 40, (290, 400), 5)
-    button3 = Button('How to play', 200, 40, (290, 470), 5)
+    """creation des bouttons"""
+    button1 = Button('Play', 200, 40, (290, 400), 5)
+    button2 = Button('How to play', 200, 40, (290, 470), 5)
+    button3 = Button('Back to menu', 200, 40, (290, 540), 5)
     return button1, button2, button3
+
+def grid_creation(xPos, yPos):
+    """creation de la grille"""
+    grid = Grid(xPos, yPos)
+    return grid
 
 def main_NavalBattle():
 
@@ -44,8 +116,12 @@ def main_NavalBattle():
     #creation du boutton de retour au menu
     button1, button2, button3 = Button_creation()
 
+    gridA = grid_creation(0, 0)
+
+
     run = True
     menu = True
+    play = False
     clock = pygame.time.Clock()
     logo = pygame.image.load('img/logoNV.PNG')
     while run:
@@ -56,10 +132,21 @@ def main_NavalBattle():
             button2.draw(window)
             button3.draw(window)
 
-            if button1.pressed == True :
-                print("back to main menu")
+            if button1.pressed == True:
+                print("Play")
                 time.sleep(0.2)
                 button1.pressed = False
+                play = True
+                menu = False
+
+            if button2.pressed == True:
+                print("how to play")
+                time.sleep(0.2)
+
+            if button3.pressed == True :
+                print("back to main menu")
+                time.sleep(0.2)
+                button3.pressed = False
                 run = False
                 menu = False
 
@@ -70,6 +157,16 @@ def main_NavalBattle():
 
             pygame.display.update()
 
+        while play:
+            window_refresh(window)
+            gridA.display(window)
+            gridA.placement()
+            pygame.display.update()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    play = False
+                    run = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

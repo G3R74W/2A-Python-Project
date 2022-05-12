@@ -280,8 +280,10 @@ def main_squareGame() :
         if lost :
             show_highscore = open('highscore.txt',"r")
             content = show_highscore.read()
-
-            main_highscore = int(content)
+            if content == "":
+                main_highscore = 0
+            else :
+                main_highscore = int(content)
             show_highscore.close()
 
 
@@ -681,6 +683,3 @@ def main_squareGame() :
 
 
             clock.tick(60)
-
-
-
