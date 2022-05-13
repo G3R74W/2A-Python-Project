@@ -650,7 +650,7 @@ def jeu(reference_timer, actif=0):
     tableaux[0].perso = perso
     tableaux[0].enemies.append(Enemies())
     tableaux[0].enemies[0].setpos((0, 0), (0, 0), (0, 576), (1024, 576), (1024, 0), 10, "trigo")
-    tableaux[0].fond.append(Fond("fond.png"))
+    tableaux[0].fond.append(Fond("fond.jpg"))
     tableaux[0].fond[0].setpos((dimensions[0] / 2, 0))
     tableaux[0].obstacles.append(Finish(50, 50))
     tableaux[0].obstacles[0].setpos((100, 200))
@@ -658,7 +658,7 @@ def jeu(reference_timer, actif=0):
     tableaux[0].sol.append(((0, 500), (1024, 500)))
 
     tableaux[1].perso = perso
-    tableaux[1].fond.append(Fond("fond.png"))
+    tableaux[1].fond.append(Fond("fond.jpg"))
     tableaux[1].fond[0].setpos((dimensions[0] / 2, 0))
     tableaux[1].obstacles.append(Finish(50, 50))
     tableaux[1].obstacles[0].setpos((100, 200))
@@ -674,7 +674,7 @@ def jeu(reference_timer, actif=0):
     tableaux[1].sol.append(((0, 500), (1024, 500)))
 
     tableaux[2].perso = perso
-    tableaux[2].fond.append(Fond("fond.png"))
+    tableaux[2].fond.append(Fond("fond.jpg"))
     tableaux[2].fond[0].setpos((dimensions[0] / 2, 0))
     tableaux[2].obstacles.append(Finish(50, 50))
     tableaux[2].obstacles[0].setpos((100, 200))
