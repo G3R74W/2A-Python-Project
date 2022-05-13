@@ -32,7 +32,11 @@ class Piece:
 class Grid():
     def __init__(self, xPos, yPos):
         self.size = (10, 10)
-        self.grid = [[0] * self.size[0]] * self.size[1]
+        self.grid = []
+        for i in range(self.size[0]):
+            self.grid.append([])
+            for j in range(self.size[1]):
+                self.grid[i].append(0)
         self.pos = (xPos, yPos)
         self.listRect = []
 
@@ -43,14 +47,10 @@ class Grid():
             Les 2 représentent une case vide touchée
             Les 3 representent une case avec un navire touchée"""
 
-        #for i in range(self.size[1]):
-            #affichage console
-            #print(self.grid[0])
-
-        yPos, q = 0, 0
-
+        q = 0
+        yPos = self.pos[1]
         for j in range(self.size[0]):
-            xPos = 0
+            xPos = self.pos[0]
             for k in range(self.size[1]):
                 switcher = {
                     0: (255, 255, 255),
@@ -58,29 +58,27 @@ class Grid():
                     2: (0, 0, 0),
                     3: (255, 0, 0)
                 }
-
                 self.listRect.append(pygame.Rect(xPos, yPos, 30, 30))
                 color = switcher.get(self.grid[j][k], (0, 255, 0))
-                pygame.draw.rect(window, switcher.get(self.grid[j][k], (0, 255, 0)), self.listRect[q])
+                pygame.draw.rect(window, color, self.listRect[q])
                 xPos += 31
                 q += 1
             yPos += 31
         pygame.display.update()
         return color
 
-    def placement(self):
+    def placement(self, window):
         """permet de placer les navires sur la grille"""
         mouseX, mouseY = pygame.mouse.get_pos()
-        for event in pygame.event.get():
-            if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                print("clickkkk")
-        for i in self.listRect[0]:
+        for i in range(len(self.listRect)):
             if self.listRect[i].collidepoint((mouseX, mouseY)):
                 for event in pygame.event.get():
                     if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                        print("grid click")
+                        j = i//10
+                        k = i % 10
+                        self.grid[j][k] = 1
+                        print(self.grid)
 
-        #print((mouseX, mouseY))
 
 def window_refresh(window):
     bg_image = pygame.image.load('img/blue.jpg')
@@ -116,7 +114,7 @@ def main_NavalBattle():
     #creation du boutton de retour au menu
     button1, button2, button3 = Button_creation()
 
-    gridA = grid_creation(0, 0)
+    gridA = grid_creation(100, 100)
 
 
     run = True
@@ -160,9 +158,9 @@ def main_NavalBattle():
         while play:
             window_refresh(window)
             gridA.display(window)
-            gridA.placement()
+            gridA.placement(window)
             pygame.display.update()
-
+            gridA.listRect = []
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     play = False
