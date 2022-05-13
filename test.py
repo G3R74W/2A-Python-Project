@@ -41,7 +41,10 @@ def server_echo():
                             print(f"server_echo: (STOP)")
                             bLoop1 = False
                             break
-                        conn.sendall(data)
+                        message = input("tapez votre message : \n")
+                        print("votre message est : %s" % (message))
+
+                        conn.sendall(message.encode('utf-8'))
                 else:
                     refus = "Le message d'autentification n'est pas le bon"
                     print(refus)
@@ -56,8 +59,8 @@ def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.settimeout(0)
     try:
-        # on cree une socket vers une adresse qui n'a pas d'importance
-        # puis on chope le premier element du nom de la socket
+        # on cree une socket vers une adresse qui n'a pas d' importance
+        # puis on obtient le premier element du nom de la socket
         # cela nous donne notre IP
         s.connect(('10.255.255.255', 1))
         IP = s.getsockname()[0]
@@ -146,8 +149,11 @@ def test_ping(list_host):
                     print("------Envoie du message-------")
                     # message_socket.sendall(message.encode("utf-8"))
                     test_socket.sendall(message.encode("utf-8"))
-                    data = test_socket.recv(1024)
-                    print("message recu : %s" % (data.decode("utf-8")))
+                    data = test_socket.recv(1024).decode("utf-8")
+                    print("message recu : %s" % (data))
+                    if data == "stop":
+                        conversation = False
+                        test_socket.sendall("stop".encode("utf-8"))
                 except Exception as e:
                     print("erreur dans l'envoie du message \n -> erreur : %s" % (e))
                     conversation = False

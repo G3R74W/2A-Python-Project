@@ -1,4 +1,5 @@
 #-*- coding: UTF-8 -*-
+#@tobias wendl
 
 import pygame
 from pygame import*
@@ -8,15 +9,14 @@ import time
 
 class Piece:
 
-    def __init__(self, xPos, yPos):
+    def __init__(self, xPos, yPos, type):
+
+        self.player = 0     # 0-> n appartient a aucun joueur
+        self.pos = (xPos, yPos)
+        self.corpse = []
+        self.listRect = []
         self.size = 0
-        self.player = 0
-        self.xPos = xPos
-        self.yPos = yPos
-
-    def position(self, xPos, yPos):
-
-        """
+        #on init la taille en fct du type
         if type == "porte avion":
             self.size = 5
 
@@ -27,9 +27,22 @@ class Piece:
             self.size = 3
 
         elif type == "torpilleur":
-            self.size = 2"""
+            self.size = 2
 
-class Grid():
+        #on init la liste qui sert de corps au navire
+        #0 représente gris
+        #1 représente rouge --> navire touché
+        for i in range(self.size):
+            self.corpse.append(0)
+
+    def display(self, window):
+        """permet d'afficher les pièces"""
+        color = (135, 138, 136)
+        for i in range(self.size):
+            self.listRect[i].append(pygame.Rect(self.pos[0], self.pos[1], 30, 30))
+            pygame.draw.rect(window, color, self.listRect[i])
+
+class Grid:
     def __init__(self, xPos, yPos):
         self.size = (10, 10)
         self.grid = []
@@ -54,7 +67,7 @@ class Grid():
             for k in range(self.size[1]):
                 switcher = {
                     0: (255, 255, 255),
-                    1: (118, 130, 127),
+                    1: (135, 138, 136),
                     2: (0, 0, 0),
                     3: (255, 0, 0)
                 }
@@ -64,7 +77,6 @@ class Grid():
                 xPos += 31
                 q += 1
             yPos += 31
-        pygame.display.update()
         return color
 
     def placement(self, window):
@@ -114,16 +126,22 @@ def main_NavalBattle():
     #creation du boutton de retour au menu
     button1, button2, button3 = Button_creation()
 
-    gridA = grid_creation(100, 100)
+    gridA = grid_creation(50, 200)
+    gridB = grid_creation(450, 200)
 
 
     run = True
     menu = True
     play = False
     clock = pygame.time.Clock()
+
+    #loading images
     logo = pygame.image.load('img/logoNV.PNG')
+    placeShip = pygame.image.load('img/PlaceShip.PNG')
+
     while run:
         while menu:
+            window_refresh(window)
             window.blit(logo, (245, 70))
             #affichage du boutton sur la fenetre
             button1.draw(window)
@@ -157,14 +175,21 @@ def main_NavalBattle():
 
         while play:
             window_refresh(window)
+            window.blit(placeShip, (110,0))
+
             gridA.display(window)
+
             gridA.placement(window)
+
             pygame.display.update()
+
             gridA.listRect = []
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     play = False
-                    run = False
+                    menu = True
+            clock.tick(60)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
