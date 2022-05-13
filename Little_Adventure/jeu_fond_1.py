@@ -99,8 +99,8 @@ def load_sound(name):
 class Perso(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image_1, self.rect_1 = load_image(name='perso_3.png', scalex=100, scaley=100, colorkey=-1)
-        self.image_2, self.rect_2 = load_image(name='perso_1.png', scalex=100, scaley=100, colorkey=-1)
+        self.image_1, self.rect_1 = load_image(name='perso1.png', scalex=100, scaley=100, colorkey=-1)
+        self.image_2, self.rect_2 = load_image(name='persotest.png', scalex=100, scaley=100, colorkey=-1)
         self.image, self.rect = self.image_1, self.rect_1
         #  print ("image <%s> rect %s" %('perso_3.png',self.rect))
         self.y = 0
@@ -690,7 +690,7 @@ def jeu(reference_timer, actif=0):
     tableaux[2].sol.append(((0, 500), (1024, 500)))
 
     tableaux[3].perso = perso
-    tableaux[3].fond.append(Fond("fond2.png"))
+    tableaux[3].fond.append(Fond("fond2.jpg"))
     tableaux[3].fond[0].setpos((dimensions[0] / 2, 0))
     tableaux[3].obstacles.append(Finish(50, 50))
     tableaux[3].obstacles[0].setpos((100, 200))
