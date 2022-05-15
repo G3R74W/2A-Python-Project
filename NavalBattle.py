@@ -16,6 +16,7 @@ class Piece:
         self.corpse = []
         self.listRect = []
         self.size = 0
+        self.type = type
         #on init la taille en fct du type
         if type == "porte avion":
             self.size = 5
@@ -30,17 +31,27 @@ class Piece:
             self.size = 2
 
         #on init la liste qui sert de corps au navire
+        #on init à 0
         #0 représente gris
         #1 représente rouge --> navire touché
         for i in range(self.size):
             self.corpse.append(0)
 
+
     def display(self, window):
         """permet d'afficher les pièces"""
+        font = pygame.font.SysFont("comicsans", 30, True)
         color = (135, 138, 136)
+        xPos, yPos = self.pos[0], self.pos[1]
         for i in range(self.size):
-            self.listRect[i].append(pygame.Rect(self.pos[0], self.pos[1], 30, 30))
-            pygame.draw.rect(window, color, self.listRect[i])
+            ship = pygame.Rect(xPos, yPos, 30, 30)
+            self.listRect.append(ship)
+            pygame.draw.rect(window, color, ship)
+            xPos += 31
+
+        text = font.render(self.type, 1, (255,255,255))
+        window.blit(text, (self.pos[0], self.pos[1]-50))
+
 
 class Grid:
     def __init__(self, xPos, yPos):
@@ -126,9 +137,14 @@ def main_NavalBattle():
     #creation du boutton de retour au menu
     button1, button2, button3 = Button_creation()
 
+
+    #creation des grilles
+    #gridB --> grille du joueur adverse
     gridA = grid_creation(50, 200)
     gridB = grid_creation(450, 200)
 
+
+    torpilleur = Piece(500, 500, 'torpilleur')
 
     run = True
     menu = True
@@ -175,7 +191,9 @@ def main_NavalBattle():
 
         while play:
             window_refresh(window)
-            window.blit(placeShip, (110,0))
+            window.blit(placeShip, (110, 0))
+
+            torpilleur.display(window)
 
             gridA.display(window)
 
