@@ -186,7 +186,9 @@ def piece_creation(xPos, yPos, type):
     return piece
 
 def main_NavalBattle():
+    """fonction main du jeu naval battle"""
 
+    #attribution de la variable window
     window = window_init()
 
     #intialisation de la fenetre
@@ -197,20 +199,26 @@ def main_NavalBattle():
 
 
     #creation des grilles
+    #gridA --> grille de l'utilisateur
     #gridB --> grille du joueur adverse
     gridA = grid_creation(50, 200)
     gridB = grid_creation(450, 200)
 
-    #creation des pieces
+    #creation des pieces avec l'utilisation de la fonction piece_creation
     torpilleur = piece_creation(400, 200, 'torpilleur')
     contre_torpilleur = piece_creation(400,300, 'contre torpilleur')
     croiseur = piece_creation(400, 400, 'croiseur')
     porte_avion = piece_creation(400, 500, 'porte avion')
 
+    #définition de quelques booléens
     run = True
     menu = True
     play = False
+
+    #définition de la variable clock
+    #peut être utilisée pour gérer les FPS
     clock = pygame.time.Clock()
+
     #variable utilisée pour la méthode placement de la classe Grid
     size = 0
 
@@ -218,14 +226,22 @@ def main_NavalBattle():
     logo = pygame.image.load('img/logoNV.PNG')
     placeShip = pygame.image.load('img/PlaceShip.PNG')
 
+    #début de la boucle principale
     while run:
+        #début de la boucle menu
         while menu:
+            #refresh de la fenetre à chaque début de boucle
             window_refresh(window)
+
+            #affichage du logo
             window.blit(logo, (245, 70))
-            #affichage du boutton sur la fenetre
+
+            #affichage des bouttons sur la fenetre
             button1.draw(window)
             button2.draw(window)
             button3.draw(window)
+
+            #test si les bouttons ont été cliqués + définition des actions à effectué si bouttons cliqué
 
             if button1.pressed == True:
                 print("Play")
@@ -245,16 +261,26 @@ def main_NavalBattle():
                 run = False
                 menu = False
 
+            #permet à l'utilisateur de quitter le menu et le jeu
+            #le renvoi sur le menu principal
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
                     menu = False
 
+            #mise à jour de la fenetre
             pygame.display.update()
 
+        #début de la boucle de jeu
         while play:
+
+            #refresh de la fenetre à chaque début de boucle
             window_refresh(window)
+
+            #affichage de l'image contenant le texte 'placez vos navires'
             window.blit(placeShip, (110, 0))
+
+            #affichage des bouttons 'ready' et 'retour au menu'
             button4.draw(window)
             button5.draw(window)
 
@@ -270,7 +296,7 @@ def main_NavalBattle():
             croiseur.check_click(window)
             porte_avion.check_click(window)
 
-
+            #si celle-ci sont cliquées et n'ont pas encore été placées --> pièce sélectionnée
             if torpilleur.frame and torpilleur.collision and torpilleur.counter > 0:
                 size = 2
                 contre_torpilleur.frame = False
@@ -278,6 +304,7 @@ def main_NavalBattle():
                 porte_avion.frame = False
                 torpilleur.collision = False
 
+            #on teste si l'on peut encore placer la piece ou si elle se situe déjà sur la grille
             if size == 2 and torpilleur.counter == 0:
                 size = 0
 
@@ -315,6 +342,9 @@ def main_NavalBattle():
             gridA.display(window)
 
             placed = gridA.placement(window, size)
+
+            #si les pièces sont placées, on met à jour le compteur
+            #compteur --> nbre de pièces du même type encore disponibles
             if placed:
                 if size == 2:
                     torpilleur.placed = True
@@ -329,8 +359,11 @@ def main_NavalBattle():
                     porte_avion.placed = True
                     porte_avion.counter -= 1
 
+            #mise à jour de la fenetre
             pygame.display.update()
 
+            #reinitialisation de la liste contenant les rectangle de la grille A
+            #évite un dépassement --> index <= 100
             gridA.listRect = []
 
             #on add tous les counter des pièces pour verifier que l'on peut lancer le jeu
@@ -348,6 +381,7 @@ def main_NavalBattle():
                     print("place all your ships")
 
             #button back to menu
+            #permet de retourner au menu du jeu
             if button5.pressed == True :
                 print("back to menu")
                 time.sleep(0.2)
@@ -355,13 +389,19 @@ def main_NavalBattle():
                 play = False
                 menu = True
 
+            #permet à l'utilisateur de retourner au menu du jeu
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     play = False
                     menu = True
+
+            #60 fps
             clock.tick(60)
 
+        #permet à l'utilisateur de quitter le jeu --> retour au menu principal
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+
+        #mise à jour de la fenetre
         pygame.display.update()
