@@ -119,15 +119,32 @@ class Grid:
         mouseX, mouseY = pygame.mouse.get_pos()
         for i in range(len(self.listRect)):
             if self.listRect[i].collidepoint((mouseX, mouseY)):
+                #on sauvegarde la variable i en utilisant une variable m
+                m = i
+                for j in range(size):
 
-                pygame.draw.rect(window, (59, 199, 44), self.listRect[i], 2)
-
+                    if m < len(self.listRect):
+                        pygame.draw.rect(window, (59, 199, 44), self.listRect[m], 2)
+                        m += 1
+                    else:
+                        pygame.draw.rect(window, (59, 199, 44), self.listRect[m-size], 2)
+                        m -= size-1
                 for event in pygame.event.get():
                     if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                        j = i//10
-                        k = i % 10
-                        self.grid[j][k] = 1
-                        print(self.grid)
+                        #la boucle for suivante permet de changer la couleur de tous les rect sélectionnés
+                        for l in range(size):
+                            if i < len(self.listRect):
+                                j = i // 10
+                                k = i % 10
+                                self.grid[j][k] = 1
+                                print(self.grid)
+                                i += 1
+                            else:
+                                j = (i-size)//10
+                                k = (i-size)%10
+                                self.grid[j][k] = 1
+                                print(self.grid)
+                                i -= size-1
 
 def window_refresh(window):
     bg_image = pygame.image.load('img/blue.jpg')
@@ -189,7 +206,7 @@ def main_NavalBattle():
     clock = pygame.time.Clock()
 
     #variable utilisée pour la méthode placement de la classe Grid
-    size = 0
+    size = 1
 
     #loading images
     logo = pygame.image.load('img/logoNV.PNG')
