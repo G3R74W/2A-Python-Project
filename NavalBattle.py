@@ -117,6 +117,7 @@ class Grid:
     def placement(self, window, size):
         """permet de placer les navires sur la grille"""
         mouseX, mouseY = pygame.mouse.get_pos()
+        placed = False
         for i in range(len(self.listRect)):
             if self.listRect[i].collidepoint((mouseX, mouseY)):
                 #on sauvegarde la variable i en utilisant une variable m
@@ -138,16 +139,21 @@ class Grid:
                             if i < len(self.listRect):
                                 j = i // 10
                                 k = i % 10
-                                self.grid[j][k] = 1
-                                print(self.grid)
-                                i += 1
+                                if self.grid[j][k] == 0:
+                                    self.grid[j][k] = 1
+                                    print(self.grid)
+                                    i += 1
+                                    placed = True
                             else:
-                                j = (i-size)//10
-                                k = (i-size)%10
-                                self.grid[j][k] = 1
-                                print(self.grid)
-                                i -= size-1
-                        return True
+                                j = (i-size) // 10
+                                k = (i-size) % 10
+                                if self.grid[j][k] == 0:
+                                    self.grid[j][k] = 1
+                                    print(self.grid)
+                                    i -= size-1
+                                    placed = True
+                        if placed:
+                            return True
 
 def window_refresh(window):
     bg_image = pygame.image.load('img/blue.jpg')
@@ -323,12 +329,25 @@ def main_NavalBattle():
                     porte_avion.placed = True
                     porte_avion.counter -= 1
 
-
-
             pygame.display.update()
 
             gridA.listRect = []
 
+            #on add tous les counter des pièces pour verifier que l'on peut lancer le jeu
+            counter = torpilleur.counter + contre_torpilleur.counter + croiseur.counter + porte_avion.counter
+
+            #button ready
+            if button4.pressed == True :
+                print("ready")
+                time.sleep(0.2)
+                button4.pressed = False
+                #on verifie que tous les navires sont posés avant de lancer le jeu
+                if counter == 0:
+                    print("you can play")
+                else:
+                    print("place all your ships")
+
+            #button back to menu
             if button5.pressed == True :
                 print("back to menu")
                 time.sleep(0.2)
