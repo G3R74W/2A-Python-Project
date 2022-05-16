@@ -71,7 +71,7 @@ def load_image(name, scalex, scaley, colorkey=None):
     ratiom = min(ratiox, ratioy)
     scalex, scaley = int(dimx * ratiom), int(dimy * ratiom)
     if colorkey is not None:
-        if colorkey is -1:
+        if colorkey == -1:
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey, RLEACCEL)
 
@@ -99,8 +99,40 @@ def load_sound(name):
 class Perso(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image_1, self.rect_1 = load_image(name='perso1.png', scalex=100, scaley=100, colorkey=-1)
-        self.image_2, self.rect_2 = load_image(name='persotest.png', scalex=100, scaley=100, colorkey=-1)
+        self.image_1  , self.rect_1    = load_image(name='perso1.png', scalex=100, scaley=100, colorkey=-1 )
+        '''
+        self.image_2  , self.rect_2    = load_image(name='perso2.png', scalex=100, scaley=100, colorkey=-1 )
+        self.image_3  , self.rect_3    = load_image(name='perso3.png', scalex=100, scaley=100, colorkey=-1 )
+        self.image_4  , self.rect_4    = load_image(name='perso4.png', scalex=100, scaley=100, colorkey=-1 )
+        self.image_5  , self.rect_5    = load_image(name='perso5.png', scalex=100, scaley=100, colorkey=-1 )
+        self.image_6  , self.rect_6    = load_image(name='perso6.png', scalex=100, scaley=100, colorkey=-1 )
+        self.image_7  , self.rect_7    = load_image(name='perso7.png', scalex=100, scaley=100, colorkey=-1 )
+        self.image_8  , self.rect_8    = load_image(name='perso8.png', scalex=100, scaley=100, colorkey=-1 )
+        self.image_9  , self.rect_9    = load_image(name='perso9.png', scalex=100, scaley=100, colorkey=-1 )
+        self.image_10 , self.rect_10   = load_image(name='perso10.png', scalex=100, scaley=100, colorkey=-1)
+        self.image_11 , self.rect_11   = load_image(name='perso11.png', scalex=100, scaley=100, colorkey=-1)
+        self.image_12 , self.rect_12   = load_image(name='perso12.png', scalex=100, scaley=100, colorkey=-1)
+        self.image_13 , self.rect_13   = load_image(name='perso13.png', scalex=100, scaley=100, colorkey=-1)
+        self.image_14 , self.rect_14   = load_image(name='perso14.png', scalex=100, scaley=100, colorkey=-1)
+        self.image_15 , self.rect_15   = load_image(name='perso15.png', scalex=100, scaley=100, colorkey=-1)
+        self.image_16 , self.rect_16   = load_image(name='perso16.png', scalex=100, scaley=100, colorkey=-1)
+        '''
+        self.liste_image = (load_image(name='perso1.png', scalex=100, scaley=100, colorkey=-1) ,
+                            load_image(name='perso2.png', scalex=100, scaley=100, colorkey=-1) ,
+                            load_image(name='perso3.png', scalex=100, scaley=100, colorkey=-1) ,
+                            load_image(name='perso4.png', scalex=100, scaley=100, colorkey=-1) ,
+                            load_image(name='perso5.png', scalex=100, scaley=100, colorkey=-1) ,
+                            load_image(name='perso6.png', scalex=100, scaley=100, colorkey=-1) ,
+                            load_image(name='perso7.png', scalex=100, scaley=100, colorkey=-1) ,
+                            load_image(name='perso8.png', scalex=100, scaley=100, colorkey=-1) ,
+                            load_image(name='perso9.png', scalex=100, scaley=100, colorkey=-1) ,
+                            load_image(name='perso10.png', scalex=100, scaley=100, colorkey=-1),
+                            load_image(name='perso11.png', scalex=100, scaley=100, colorkey=-1),
+                            load_image(name='perso12.png', scalex=100, scaley=100, colorkey=-1),
+                            load_image(name='perso13.png', scalex=100, scaley=100, colorkey=-1),
+                            load_image(name='perso14.png', scalex=100, scaley=100, colorkey=-1),
+                            load_image(name='perso15.png', scalex=100, scaley=100, colorkey=-1),
+                            load_image(name='perso16.png', scalex=100, scaley=100, colorkey=-1))
         self.image, self.rect = self.image_1, self.rect_1
         #  print ("image <%s> rect %s" %('perso_3.png',self.rect))
         self.y = 0
@@ -118,6 +150,7 @@ class Perso(pygame.sprite.Sprite):
         self.compteur = 0
         self.flip = False
         self.image_mem = self.image_1
+        self.i = 0
 
     def update(self):
         if self.ay > .015:
@@ -126,6 +159,7 @@ class Perso(pygame.sprite.Sprite):
             self.ay = self.ay + .01
         else:
             self.ay = 0
+
 
         if self.ax > .075:
             self.ax = self.ax - .05
@@ -151,27 +185,27 @@ class Perso(pygame.sprite.Sprite):
                     self.ay = 0
                 elif self.y < self.y_sol - 105:
                     self.ay -= 0.25
+                if self.c_top == True:
+                    self.ay = 0
 
-        if self.c_top and self.ay < 0:
-            self.ay = 0
-        elif self.c_right and self.ax > 0:
+        if self.c_right and self.ax > 0 and not self.c_top:
             self.ax = 0
-        elif self.c_left and self.ax < 0:
+        elif self.c_left and self.ax < 0 and not self.c_top:
             self.ax = 0
         #  print("update xy=%6.2lf/%6.2lf ax/ay=%6.2lf/%6.2lf"%(self.x,self.y,self.ax,self.ay))
         self.y -= self.ay
         self.x += self.ax
         if not self.ay == 0:
             self.ay -= 0.5
-        if self.ay > 30:
+        if self.ay > 15:
             self.ay = 30
         elif self.ay < -30:
             self.ay = -30
 
-        if self.ax > 6:
-            self.ax = 6
-        elif self.ax < -6:
-            self.ax = -6
+        if self.ax > 3:
+            self.ax = 3
+        elif self.ax < -3:
+            self.ax = -3
             # if self.y < 451:
         #  self.ay-=.5
         # elif self.y == 451 and self.ay<=0:
@@ -197,17 +231,14 @@ class Perso(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(self.image, True, False)
             self.flip = False
 
-        if self.compteur == 10:
+        if self.compteur == 30:
             self.compteur = 0
             if not self.ax == 0:
-                if self.image_mem == self.image_1:
-                    self.image = self.image_2
-                    self.flip = False
-                    self.image_mem = self.image_2
-                elif self.image_mem == self.image_2:
-                    self.image = self.image_1
-                    self.image_mem = self.image_1
-                    self.flip = False
+                self.image, self.rect = self.liste_image[self.i]
+                self.i += 1
+                self.flip = False
+                if self.i >= len(self.liste_image):
+                    self.i = 0
         self.compteur += 1
         #  print("le compteur est a %s"%(self.compteur))
 
@@ -263,8 +294,9 @@ class Perso(pygame.sprite.Sprite):
                 #  self.c_right=False
                 #  self.c_left=False
                 if self.rect[1] + self.rect[3] <= cibley + 20:
-                    #        print("je suis au dessus")
+                    print("je suis au dessus")
                     self.c_top = True
+
                 # else:
                 #  self.c_top=False
 
@@ -679,9 +711,9 @@ def jeu(reference_timer, actif=0):
     tableaux[2].obstacles.append(Finish(50, 50))
     tableaux[2].obstacles[0].setpos((100, 200))
     tableaux[2].obstacles.append(Caisse())
-    tableaux[2].obstacles[1].setpos((230, 401))
+    tableaux[2].obstacles[1].setpos((800, 401))
     tableaux[2].pieges.append(Flame())
-    tableaux[2].pieges[0].setpos((800, 401))
+    tableaux[2].pieges[0].setpos((230, 401))
     tableaux[2].finishbg = (824, 576)
     tableaux[2].finishhd = (1024, 0)
     tableaux[2].finishhg = (824, 0)
@@ -731,9 +763,9 @@ def jeu(reference_timer, actif=0):
                     perso.deplacement(dir="haut", val=15)
                     space = True
                 if event.key == pygame.K_RIGHT:
-                    perso.deplacement(dir="droite", val=2)
+                    perso.deplacement(dir="droite", val=1.3)
                 if event.key == pygame.K_LEFT:
-                    perso.deplacement(dir="gauche", val=2)
+                    perso.deplacement(dir="gauche", val=1.3)
                 # if event.key==pygame.K_DOWN:
                 #  tableaux[actif].finish(actif,nombre_tableaux)
             if event.type == QUIT:
@@ -776,7 +808,7 @@ def jeu(reference_timer, actif=0):
                 collision = True
 
         if space:
-            perso.c_right = perso.c_left = perso.c_top = False
+            perso.c_right = perso.c_left  =False
 
         if collision:
             print("aie")
