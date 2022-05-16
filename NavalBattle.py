@@ -121,6 +121,7 @@ class Grid:
             if self.listRect[i].collidepoint((mouseX, mouseY)):
                 #on sauvegarde la variable i en utilisant une variable m
                 m = i
+
                 for j in range(size):
 
                     if m < len(self.listRect):
@@ -132,6 +133,7 @@ class Grid:
                 for event in pygame.event.get():
                     if event.type == MOUSEBUTTONDOWN and event.button == 1:
                         #la boucle for suivante permet de changer la couleur de tous les rect sélectionnés
+                        #ex: torpilleur sélectionné --> 2 cases coloriées
                         for l in range(size):
                             if i < len(self.listRect):
                                 j = i // 10
@@ -145,6 +147,7 @@ class Grid:
                                 self.grid[j][k] = 1
                                 print(self.grid)
                                 i -= size-1
+                        return True
 
 def window_refresh(window):
     bg_image = pygame.image.load('img/blue.jpg')
@@ -176,8 +179,6 @@ def piece_creation(xPos, yPos, type):
     piece = Piece(xPos, yPos, type)
     return piece
 
-
-
 def main_NavalBattle():
 
     window = window_init()
@@ -204,9 +205,8 @@ def main_NavalBattle():
     menu = True
     play = False
     clock = pygame.time.Clock()
-
     #variable utilisée pour la méthode placement de la classe Grid
-    size = 1
+    size = 0
 
     #loading images
     logo = pygame.image.load('img/logoNV.PNG')
@@ -265,12 +265,15 @@ def main_NavalBattle():
             porte_avion.check_click(window)
 
 
-            if torpilleur.frame and torpilleur.collision:
+            if torpilleur.frame and torpilleur.collision and torpilleur.counter > 0:
                 size = 2
                 contre_torpilleur.frame = False
                 croiseur.frame = False
                 porte_avion.frame = False
                 torpilleur.collision = False
+
+            if size == 2 and torpilleur.counter == 0:
+                size = 0
 
             if contre_torpilleur.frame and contre_torpilleur.collision:
                 size = 3
@@ -279,12 +282,18 @@ def main_NavalBattle():
                 porte_avion.frame = False
                 contre_torpilleur.collision = False
 
+            if size == 3 and contre_torpilleur.counter == 0:
+                size = 0
+
             if croiseur.frame and croiseur.collision:
                 size = 4
                 torpilleur.frame = False
                 contre_torpilleur.frame = False
                 porte_avion.frame = False
                 croiseur.collision = False
+
+            if size == 4 and croiseur.counter == 0:
+                size = 0
 
             if porte_avion.frame and porte_avion.collision:
                 size = 5
@@ -293,10 +302,28 @@ def main_NavalBattle():
                 croiseur.frame = False
                 porte_avion.collision = False
 
+            if size == 5 and porte_avion.counter == 0:
+                size = 0
+
             #affichage de la grille de jeu
             gridA.display(window)
 
-            gridA.placement(window, size)
+            placed = gridA.placement(window, size)
+            if placed:
+                if size == 2:
+                    torpilleur.placed = True
+                    torpilleur.counter -= 1
+                if size == 3:
+                    contre_torpilleur.placed = True
+                    contre_torpilleur.counter -= 1
+                if size == 4:
+                    croiseur.placed = True
+                    croiseur.counter -= 1
+                if size == 5:
+                    porte_avion.placed = True
+                    porte_avion.counter -= 1
+
+
 
             pygame.display.update()
 
