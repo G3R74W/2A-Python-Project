@@ -162,9 +162,11 @@ class Perso(pygame.sprite.Sprite):
 
 
         if self.ax > .075:
-            self.ax = self.ax - .05
+            if self.ay == 0:
+                self.ax = self.ax - .05
         elif self.ax < -.075:
-            self.ax = self.ax + .05
+            if self.ay == 0:
+                self.ax = self.ax + .05
         else:
             self.ax = 0
 
@@ -197,7 +199,7 @@ class Perso(pygame.sprite.Sprite):
         self.x += self.ax
         if not self.ay == 0:
             self.ay -= 0.5
-        if self.ay > 15:
+        if self.ay > 30:
             self.ay = 30
         elif self.ay < -30:
             self.ay = -30
@@ -231,7 +233,7 @@ class Perso(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(self.image, True, False)
             self.flip = False
 
-        if self.compteur == 30:
+        if self.compteur == 10:
             self.compteur = 0
             if not self.ax == 0:
                 self.image, self.rect = self.liste_image[self.i]
@@ -696,7 +698,7 @@ def jeu(reference_timer, actif=0):
     tableaux[1].obstacles[0].setpos((100, 200))
     tableaux[1].obstacles.append(Caisse())
     tableaux[1].obstacles[1].setpos((230, 401))
-    tableaux[1].pieges.append(Obstacle_rebond(vx=10, vy=7))
+    tableaux[1].pieges.append(Obstacle_rebond(vx=5, vy=3.5))
     tableaux[1].pieges[0].setpos((40, 40))
     tableaux[1].finishbg = (0, 576)
     tableaux[1].finishhd = (200, 0)
@@ -722,7 +724,7 @@ def jeu(reference_timer, actif=0):
     tableaux[2].sol.append(((0, 500), (1024, 500)))
 
     tableaux[3].perso = perso
-    tableaux[3].fond.append(Fond("fond2.jpg"))
+    tableaux[3].fond.append(Fond("fond3.jpg"))
     tableaux[3].fond[0].setpos((dimensions[0] / 2, 0))
     tableaux[3].obstacles.append(Finish(50, 50))
     tableaux[3].obstacles[0].setpos((100, 200))
