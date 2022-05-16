@@ -19,6 +19,7 @@ class Piece:
         self.type = type #string qui définit le type de la piece
         self.frame = False
         self.collision = False
+        self.placed = False
 
         #permet de compter le nombre de pieces d'un type donné
         #attribut utilisé lors du placement des pieces
@@ -113,11 +114,14 @@ class Grid:
             yPos += 31
         return color
 
-    def placement(self, window):
+    def placement(self, window, size):
         """permet de placer les navires sur la grille"""
         mouseX, mouseY = pygame.mouse.get_pos()
         for i in range(len(self.listRect)):
             if self.listRect[i].collidepoint((mouseX, mouseY)):
+
+                pygame.draw.rect(window, (59, 199, 44), self.listRect[i], 2)
+
                 for event in pygame.event.get():
                     if event.type == MOUSEBUTTONDOWN and event.button == 1:
                         j = i//10
@@ -142,7 +146,9 @@ def Button_creation():
     button1 = Button('Play', 200, 40, (290, 400), 5)
     button2 = Button('How to play', 200, 40, (290, 470), 5)
     button3 = Button('Back to menu', 200, 40, (290, 540), 5)
-    return button1, button2, button3
+    button4 = Button('Ready', 200, 40, (290, 600), 5)
+    button5 = Button('Back to menu', 200, 40, (290, 670), 5)
+    return button1, button2, button3, button4, button5
 
 def grid_creation(xPos, yPos):
     """creation de la grille"""
@@ -163,7 +169,7 @@ def main_NavalBattle():
     window_init()
 
     #creation du boutton de retour au menu
-    button1, button2, button3 = Button_creation()
+    button1, button2, button3, button4, button5 = Button_creation()
 
 
     #creation des grilles
@@ -181,6 +187,9 @@ def main_NavalBattle():
     menu = True
     play = False
     clock = pygame.time.Clock()
+
+    #variable utilisée pour la méthode placement de la classe Grid
+    size = 0
 
     #loading images
     logo = pygame.image.load('img/logoNV.PNG')
@@ -223,7 +232,8 @@ def main_NavalBattle():
         while play:
             window_refresh(window)
             window.blit(placeShip, (110, 0))
-
+            button4.draw(window)
+            button5.draw(window)
 
             #affichage des pieces sur l'ecran
             torpilleur.display(window)
@@ -239,24 +249,28 @@ def main_NavalBattle():
 
 
             if torpilleur.frame and torpilleur.collision:
+                size = 2
                 contre_torpilleur.frame = False
                 croiseur.frame = False
                 porte_avion.frame = False
                 torpilleur.collision = False
 
             if contre_torpilleur.frame and contre_torpilleur.collision:
+                size = 3
                 torpilleur.frame = False
                 croiseur.frame = False
                 porte_avion.frame = False
                 contre_torpilleur.collision = False
 
             if croiseur.frame and croiseur.collision:
+                size = 4
                 torpilleur.frame = False
                 contre_torpilleur.frame = False
                 porte_avion.frame = False
                 croiseur.collision = False
 
             if porte_avion.frame and porte_avion.collision:
+                size = 5
                 torpilleur.frame = False
                 contre_torpilleur.frame = False
                 croiseur.frame = False
@@ -265,11 +279,18 @@ def main_NavalBattle():
             #affichage de la grille de jeu
             gridA.display(window)
 
-            gridA.placement(window)
+            gridA.placement(window, size)
 
             pygame.display.update()
 
             gridA.listRect = []
+
+            if button5.pressed == True :
+                print("back to menu")
+                time.sleep(0.2)
+                button5.pressed = False
+                play = False
+                menu = True
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
