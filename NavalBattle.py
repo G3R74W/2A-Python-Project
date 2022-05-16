@@ -13,10 +13,16 @@ class Piece:
 
         self.player = 0     # 0-> n appartient a aucun joueur
         self.pos = (xPos, yPos)
-        self.corpse = []
+        self.corpse = []  #corps du navire
         self.listRect = []
         self.size = 0
-        self.type = type
+        self.type = type #string qui définit le type de la piece
+        self.frame = False
+        self.collision = False
+
+        #permet de compter le nombre de pieces d'un type donné
+        #attribut utilisé lors du placement des pieces
+        self.counter = 1
         #on init la taille en fct du type
         if type == "porte avion":
             self.size = 5
@@ -26,6 +32,7 @@ class Piece:
 
         elif type == "contre torpilleur":
             self.size = 3
+            self.counter = 2
 
         elif type == "torpilleur":
             self.size = 2
@@ -48,10 +55,26 @@ class Piece:
             self.listRect.append(ship)
             pygame.draw.rect(window, color, ship)
             xPos += 31
-
-        text = font.render(self.type, 1, (255,255,255))
+        var_text = str(self.type + " : x" + str(self.counter))
+        text = font.render(var_text, 1, (255, 255, 255))
         window.blit(text, (self.pos[0], self.pos[1]-50))
 
+    def check_click(self, window):
+        """permet de tester si une piece a ete cliqué"""
+        mouseX, mouseY = pygame.mouse.get_pos()
+        color = (53, 16, 235)
+        for i in range(len(self.listRect)):
+            if self.listRect[i].collidepoint((mouseX, mouseY)):
+                self.collision = True
+                for event in pygame.event.get():
+                    if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                        print("piece clicked")
+                        self.frame = True
+
+        if self.frame:
+            rect_frame = pygame.Rect(self.pos[0], self.pos[1], self.size * 30 + self.size, 32)
+            #place un cadre autour de la piece cliquée
+            pygame.draw.rect(window, color, rect_frame, 2)
 
 class Grid:
     def __init__(self, xPos, yPos):
@@ -102,7 +125,6 @@ class Grid:
                         self.grid[j][k] = 1
                         print(self.grid)
 
-
 def window_refresh(window):
     bg_image = pygame.image.load('img/blue.jpg')
     window.blit(bg_image, (0, 0))
@@ -127,6 +149,12 @@ def grid_creation(xPos, yPos):
     grid = Grid(xPos, yPos)
     return grid
 
+def piece_creation(xPos, yPos, type):
+    piece = Piece(xPos, yPos, type)
+    return piece
+
+
+
 def main_NavalBattle():
 
     window = window_init()
@@ -143,8 +171,11 @@ def main_NavalBattle():
     gridA = grid_creation(50, 200)
     gridB = grid_creation(450, 200)
 
-
-    torpilleur = Piece(500, 500, 'torpilleur')
+    #creation des pieces
+    torpilleur = piece_creation(400, 200, 'torpilleur')
+    contre_torpilleur = piece_creation(400,300, 'contre torpilleur')
+    croiseur = piece_creation(400, 400, 'croiseur')
+    porte_avion = piece_creation(400, 500, 'porte avion')
 
     run = True
     menu = True
@@ -193,8 +224,45 @@ def main_NavalBattle():
             window_refresh(window)
             window.blit(placeShip, (110, 0))
 
-            torpilleur.display(window)
 
+            #affichage des pieces sur l'ecran
+            torpilleur.display(window)
+            contre_torpilleur.display(window)
+            croiseur.display(window)
+            porte_avion.display(window)
+
+            #verifier si on clique les pieces
+            torpilleur.check_click(window)
+            contre_torpilleur.check_click(window)
+            croiseur.check_click(window)
+            porte_avion.check_click(window)
+
+
+            if torpilleur.frame and torpilleur.collision:
+                contre_torpilleur.frame = False
+                croiseur.frame = False
+                porte_avion.frame = False
+                torpilleur.collision = False
+
+            if contre_torpilleur.frame and contre_torpilleur.collision:
+                torpilleur.frame = False
+                croiseur.frame = False
+                porte_avion.frame = False
+                contre_torpilleur.collision = False
+
+            if croiseur.frame and croiseur.collision:
+                torpilleur.frame = False
+                contre_torpilleur.frame = False
+                porte_avion.frame = False
+                croiseur.collision = False
+
+            if porte_avion.frame and porte_avion.collision:
+                torpilleur.frame = False
+                contre_torpilleur.frame = False
+                croiseur.frame = False
+                porte_avion.collision = False
+
+            #affichage de la grille de jeu
             gridA.display(window)
 
             gridA.placement(window)
