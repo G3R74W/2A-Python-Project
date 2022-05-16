@@ -214,6 +214,8 @@ def main_NavalBattle():
     run = True
     menu = True
     play = False
+    placement = True
+    game = False
 
     #définition de la variable clock
     #peut être utilisée pour gérer les FPS
@@ -248,6 +250,7 @@ def main_NavalBattle():
                 time.sleep(0.2)
                 button1.pressed = False
                 play = True
+                placement = True
                 menu = False
 
             if button2.pressed == True:
@@ -273,130 +276,159 @@ def main_NavalBattle():
 
         #début de la boucle de jeu
         while play:
+            while placement:
+                #refresh de la fenetre à chaque début de boucle
+                window_refresh(window)
 
-            #refresh de la fenetre à chaque début de boucle
-            window_refresh(window)
+                #affichage de l'image contenant le texte 'placez vos navires'
+                window.blit(placeShip, (110, 0))
 
-            #affichage de l'image contenant le texte 'placez vos navires'
-            window.blit(placeShip, (110, 0))
+                #affichage des bouttons 'ready' et 'retour au menu'
+                button4.draw(window)
+                button5.draw(window)
 
-            #affichage des bouttons 'ready' et 'retour au menu'
-            button4.draw(window)
-            button5.draw(window)
+                #affichage des pieces sur l'ecran
+                torpilleur.display(window)
+                contre_torpilleur.display(window)
+                croiseur.display(window)
+                porte_avion.display(window)
 
-            #affichage des pieces sur l'ecran
-            torpilleur.display(window)
-            contre_torpilleur.display(window)
-            croiseur.display(window)
-            porte_avion.display(window)
+                #verifier si on clique les pieces
+                torpilleur.check_click(window)
+                contre_torpilleur.check_click(window)
+                croiseur.check_click(window)
+                porte_avion.check_click(window)
 
-            #verifier si on clique les pieces
-            torpilleur.check_click(window)
-            contre_torpilleur.check_click(window)
-            croiseur.check_click(window)
-            porte_avion.check_click(window)
+                #si celle-ci sont cliquées et n'ont pas encore été placées --> pièce sélectionnée
+                if torpilleur.frame and torpilleur.collision and torpilleur.counter > 0:
+                    size = 2
+                    contre_torpilleur.frame = False
+                    croiseur.frame = False
+                    porte_avion.frame = False
+                    torpilleur.collision = False
 
-            #si celle-ci sont cliquées et n'ont pas encore été placées --> pièce sélectionnée
-            if torpilleur.frame and torpilleur.collision and torpilleur.counter > 0:
-                size = 2
-                contre_torpilleur.frame = False
-                croiseur.frame = False
-                porte_avion.frame = False
-                torpilleur.collision = False
+                #on teste si l'on peut encore placer la piece ou si elle se situe déjà sur la grille
+                if size == 2 and torpilleur.counter == 0:
+                    size = 0
 
-            #on teste si l'on peut encore placer la piece ou si elle se situe déjà sur la grille
-            if size == 2 and torpilleur.counter == 0:
-                size = 0
+                if contre_torpilleur.frame and contre_torpilleur.collision:
+                    size = 3
+                    torpilleur.frame = False
+                    croiseur.frame = False
+                    porte_avion.frame = False
+                    contre_torpilleur.collision = False
 
-            if contre_torpilleur.frame and contre_torpilleur.collision:
-                size = 3
-                torpilleur.frame = False
-                croiseur.frame = False
-                porte_avion.frame = False
-                contre_torpilleur.collision = False
+                if size == 3 and contre_torpilleur.counter == 0:
+                    size = 0
 
-            if size == 3 and contre_torpilleur.counter == 0:
-                size = 0
+                if croiseur.frame and croiseur.collision:
+                    size = 4
+                    torpilleur.frame = False
+                    contre_torpilleur.frame = False
+                    porte_avion.frame = False
+                    croiseur.collision = False
 
-            if croiseur.frame and croiseur.collision:
-                size = 4
-                torpilleur.frame = False
-                contre_torpilleur.frame = False
-                porte_avion.frame = False
-                croiseur.collision = False
+                if size == 4 and croiseur.counter == 0:
+                    size = 0
 
-            if size == 4 and croiseur.counter == 0:
-                size = 0
+                if porte_avion.frame and porte_avion.collision:
+                    size = 5
+                    torpilleur.frame = False
+                    contre_torpilleur.frame = False
+                    croiseur.frame = False
+                    porte_avion.collision = False
 
-            if porte_avion.frame and porte_avion.collision:
-                size = 5
-                torpilleur.frame = False
-                contre_torpilleur.frame = False
-                croiseur.frame = False
-                porte_avion.collision = False
+                if size == 5 and porte_avion.counter == 0:
+                    size = 0
 
-            if size == 5 and porte_avion.counter == 0:
-                size = 0
+                #affichage de la grille de jeu
+                gridA.display(window)
 
-            #affichage de la grille de jeu
-            gridA.display(window)
+                placed = gridA.placement(window, size)
 
-            placed = gridA.placement(window, size)
+                #si les pièces sont placées, on met à jour le compteur
+                #compteur --> nbre de pièces du même type encore disponibles
+                if placed:
+                    if size == 2:
+                        torpilleur.placed = True
+                        torpilleur.counter -= 1
+                    if size == 3:
+                        contre_torpilleur.placed = True
+                        contre_torpilleur.counter -= 1
+                    if size == 4:
+                        croiseur.placed = True
+                        croiseur.counter -= 1
+                    if size == 5:
+                        porte_avion.placed = True
+                        porte_avion.counter -= 1
 
-            #si les pièces sont placées, on met à jour le compteur
-            #compteur --> nbre de pièces du même type encore disponibles
-            if placed:
-                if size == 2:
-                    torpilleur.placed = True
-                    torpilleur.counter -= 1
-                if size == 3:
-                    contre_torpilleur.placed = True
-                    contre_torpilleur.counter -= 1
-                if size == 4:
-                    croiseur.placed = True
-                    croiseur.counter -= 1
-                if size == 5:
-                    porte_avion.placed = True
-                    porte_avion.counter -= 1
+                #mise à jour de la fenetre
+                pygame.display.update()
 
-            #mise à jour de la fenetre
-            pygame.display.update()
+                #reinitialisation de la liste contenant les rectangle de la grille A
+                #évite un dépassement --> index <= 100
+                gridA.listRect = []
 
-            #reinitialisation de la liste contenant les rectangle de la grille A
-            #évite un dépassement --> index <= 100
-            gridA.listRect = []
+                #on add tous les counter des pièces pour verifier que l'on peut lancer le jeu
+                counter = torpilleur.counter + contre_torpilleur.counter + croiseur.counter + porte_avion.counter
 
-            #on add tous les counter des pièces pour verifier que l'on peut lancer le jeu
-            counter = torpilleur.counter + contre_torpilleur.counter + croiseur.counter + porte_avion.counter
+                #button ready
+                if button4.pressed == True :
+                    print("ready")
+                    time.sleep(0.2)
+                    button4.pressed = False
+                    #on verifie que tous les navires sont posés avant de lancer le jeu
+                    if counter == 0:
+                        print("you can play")
+                        placement = False
+                        game = True
+                        menu = False
+                    else:
+                        print("place all your ships")
 
-            #button ready
-            if button4.pressed == True :
-                print("ready")
-                time.sleep(0.2)
-                button4.pressed = False
-                #on verifie que tous les navires sont posés avant de lancer le jeu
-                if counter == 0:
-                    print("you can play")
-                else:
-                    print("place all your ships")
-
-            #button back to menu
-            #permet de retourner au menu du jeu
-            if button5.pressed == True :
-                print("back to menu")
-                time.sleep(0.2)
-                button5.pressed = False
-                play = False
-                menu = True
-
-            #permet à l'utilisateur de retourner au menu du jeu
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                #button back to menu
+                #permet de retourner au menu du jeu
+                if button5.pressed == True :
+                    print("back to menu")
+                    time.sleep(0.2)
+                    button5.pressed = False
                     play = False
+                    placement = False
                     menu = True
 
-            #60 fps
-            clock.tick(60)
+                #permet à l'utilisateur de retourner au menu du jeu
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        play = False
+                        placement = False
+                        menu = True
+
+                #60 fps
+                clock.tick(60)
+
+            #début de la boucle du jeu après placement des navires
+            while game:
+                #refresh de la fenetre
+                window_refresh(window)
+
+                #affichage de la grille de jeu
+                gridA.display(window)
+                gridB.display(window)
+
+                #reinitialisation de la liste contenant les rectangle de la grille A et de la grille B
+                #évite un dépassement --> index <= 100
+                gridA.listRect = []
+                gridB.listRect = []
+                #mise à jour de la fenetre
+                pygame.display.update()
+
+                # permet à l'utilisateur de quitter le jeu --> retour au menu principal
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        game = False
+                        play = False
+                        placement = False
+                        menu = True
 
         #permet à l'utilisateur de quitter le jeu --> retour au menu principal
         for event in pygame.event.get():
