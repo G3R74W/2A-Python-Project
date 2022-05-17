@@ -11,29 +11,25 @@ dimensions2 = (800, 800)
 
 # main_dir = os.path.split(os.path.abspath(__file__))[0]
 
+#class pour les boutons
 class Button:
     def __init__(self, text, width, height, pos, elevation):
 
         gui_font = pygame.font.Font(None, 30)
-        # Core attributes
         self.pressed = False
         self.elevation = elevation
         self.dynamic_elecation = elevation
         self.original_y_pos = pos[1]
 
-        # top rectangle
         self.top_rect = pygame.Rect(pos, (width, height))
         self.top_color = '#475F77'
 
-        # bottom rectangle
         self.bottom_rect = pygame.Rect(pos, (width, height))
         self.bottom_color = '#354B5E'
-        # text
         self.text_surf = gui_font.render(text, True, '#FFFFFF')
         self.text_rect = self.text_surf.get_rect(center=self.top_rect.center)
 
     def draw(self, window):
-        # elevation logic
         self.top_rect.y = self.original_y_pos - self.dynamic_elecation
         self.text_rect.center = self.top_rect.center
 
@@ -62,61 +58,58 @@ class Button:
             self.top_color = '#475F77'
 
 
+#fonction pour charger les images
 def load_image(name, scalex, scaley, colorkey=None):
+    #on recupere l'image
     image = pygame.image.load("img/%s"%(name))
+    #on l'afiiche
     image = image.convert()
     print("image <%s> rect %s" % (name, image.get_rect()))
+    #on recupere ces dimensions
     bx, by, dimx, dimy = image.get_rect()
+    #on regarde les ratio en longueur et en largeur
+    #on prend le plus petit pour ne pas difformer l'image
     ratiox, ratioy = scalex / dimx, scaley / dimy
     ratiom = min(ratiox, ratioy)
     scalex, scaley = int(dimx * ratiom), int(dimy * ratiom)
+    #on regarde la couleur voulu pour l'image -1 => couleur d'origine
     if colorkey is not None:
         if colorkey == -1:
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey, RLEACCEL)
-
+    # on redimensione l'image
     image = pygame.transform.scale(image, (scalex, scaley))
+    #et on la renvoie avec son rectangle associe
     return image, image.get_rect()
 
-
+#classe pour charger les sons
 def load_sound(name):
+    #classe d'objet de son
     class NoneSound:
         def play(self): pass
-
+    #on regarde si pygame.mixer et installe ou si il et initialise
     if not pygame.mixer or not pygame.mixer.get_init():
+        #on revoie si il existe un objet de la classe NoneSound
         return NoneSound()
     # print("main_dir = %s"%(main_dir))
     # fullname = os.path.join(main_dir, name)
     # print("fullname=%s"%(fullname))
+
+    #on essaye de lire le son choisi
     try:
         sound = pygame.mixer.Sound(name)
     except pygame.error:
+        # sinon on leve une erreur
         print('Cannot load sound: %s' % name)
         raise SystemExit(str(pygame.get_error()))
     return sound
 
-
+#classe du personage pricipale
 class Perso(pygame.sprite.Sprite):
     def __init__(self):
+        # initialisation de ses variables pricipale
         pygame.sprite.Sprite.__init__(self)
         self.image_1  , self.rect_1    = load_image(name='perso1.png', scalex=100, scaley=100, colorkey=-1 )
-        '''
-        self.image_2  , self.rect_2    = load_image(name='perso2.png', scalex=100, scaley=100, colorkey=-1 )
-        self.image_3  , self.rect_3    = load_image(name='perso3.png', scalex=100, scaley=100, colorkey=-1 )
-        self.image_4  , self.rect_4    = load_image(name='perso4.png', scalex=100, scaley=100, colorkey=-1 )
-        self.image_5  , self.rect_5    = load_image(name='perso5.png', scalex=100, scaley=100, colorkey=-1 )
-        self.image_6  , self.rect_6    = load_image(name='perso6.png', scalex=100, scaley=100, colorkey=-1 )
-        self.image_7  , self.rect_7    = load_image(name='perso7.png', scalex=100, scaley=100, colorkey=-1 )
-        self.image_8  , self.rect_8    = load_image(name='perso8.png', scalex=100, scaley=100, colorkey=-1 )
-        self.image_9  , self.rect_9    = load_image(name='perso9.png', scalex=100, scaley=100, colorkey=-1 )
-        self.image_10 , self.rect_10   = load_image(name='perso10.png', scalex=100, scaley=100, colorkey=-1)
-        self.image_11 , self.rect_11   = load_image(name='perso11.png', scalex=100, scaley=100, colorkey=-1)
-        self.image_12 , self.rect_12   = load_image(name='perso12.png', scalex=100, scaley=100, colorkey=-1)
-        self.image_13 , self.rect_13   = load_image(name='perso13.png', scalex=100, scaley=100, colorkey=-1)
-        self.image_14 , self.rect_14   = load_image(name='perso14.png', scalex=100, scaley=100, colorkey=-1)
-        self.image_15 , self.rect_15   = load_image(name='perso15.png', scalex=100, scaley=100, colorkey=-1)
-        self.image_16 , self.rect_16   = load_image(name='perso16.png', scalex=100, scaley=100, colorkey=-1)
-        '''
         self.liste_image = (load_image(name='perso1.png', scalex=100, scaley=100, colorkey=-1) ,
                             load_image(name='perso2.png', scalex=100, scaley=100, colorkey=-1) ,
                             load_image(name='perso3.png', scalex=100, scaley=100, colorkey=-1) ,
@@ -134,7 +127,6 @@ class Perso(pygame.sprite.Sprite):
                             load_image(name='perso15.png', scalex=100, scaley=100, colorkey=-1),
                             load_image(name='perso16.png', scalex=100, scaley=100, colorkey=-1))
         self.image, self.rect = self.image_1, self.rect_1
-        #  print ("image <%s> rect %s" %('perso_3.png',self.rect))
         self.y = 0
         self.x = 500
         self.ay = 0
@@ -152,7 +144,9 @@ class Perso(pygame.sprite.Sprite):
         self.image_mem = self.image_1
         self.i = 0
 
+    #fonction d'actualisation
     def update(self):
+        #on diminue les acceleration du personnage
         if self.ay > .015:
             self.ay = self.ay - .01
         elif self.ay < -.015:
@@ -170,6 +164,7 @@ class Perso(pygame.sprite.Sprite):
         else:
             self.ax = 0
 
+        #on fait en sortes que le personage marche sur le sol et les obstacles
         for sol in self.plateforme:
             # delta x delta y
             delx = sol[1] - sol[0]
@@ -190,13 +185,16 @@ class Perso(pygame.sprite.Sprite):
                 if self.c_top == True:
                     self.ay = 0
 
+        # on fait en sorte que le personnage ne rentre pas dans les obstacles
         if self.c_right and self.ax > 0 and not self.c_top:
             self.ax = 0
         elif self.c_left and self.ax < 0 and not self.c_top:
             self.ax = 0
         #  print("update xy=%6.2lf/%6.2lf ax/ay=%6.2lf/%6.2lf"%(self.x,self.y,self.ax,self.ay))
+        #on actualise les position x et y
         self.y -= self.ay
         self.x += self.ax
+        #on verfie que les acceleration sont en dessous de leurs valeurs maximale
         if not self.ay == 0:
             self.ay -= 0.5
         if self.ay > 30:
@@ -208,15 +206,12 @@ class Perso(pygame.sprite.Sprite):
             self.ax = 3
         elif self.ax < -3:
             self.ax = -3
-            # if self.y < 451:
-        #  self.ay-=.5
-        # elif self.y == 451 and self.ay<=0:
-        #  self.ay = 0
-        # elif self.y > 451:
-        #  self.y = 451
-        #  self.ay = 0
+
+        #inplementation de la gravite
         if self.y < 0:
             self.ay -= 1.5
+
+        #on fait en sorte que le personnage ne sorte pas de la fenetre
         if self.x < 0:
             self.x = 0
             self.ax = -self.ax
@@ -225,14 +220,14 @@ class Perso(pygame.sprite.Sprite):
             self.ax = -self.ax
 
         # print("h=%s l=%s"%(str(self.h),str(self.l)))
-
+        #on retourne l'image de personnage si besoin
         if self.ax < 0 and self.flip == False:
             self.image = pygame.transform.flip(self.image, True, False)
             self.flip = True
         elif self.ax > 0 and self.flip == True:
             self.image = pygame.transform.flip(self.image, True, False)
             self.flip = False
-
+        #on change son image
         if self.compteur == 10:
             self.compteur = 0
             if not self.ax == 0:
@@ -244,10 +239,12 @@ class Perso(pygame.sprite.Sprite):
         self.compteur += 1
         #  print("le compteur est a %s"%(self.compteur))
 
+        #on met a jour sa position et sa zone de collision
         self.pos = (self.x, self.y)
         self.rect.midtop = self.pos
         # print("le sol est :%s"%(self.sol))
 
+    #fonction qui met la l'objet a une position donne princiapalement utilise pour initialise la position d'un objet
     def setpos(self, pos=(500, 0)):
         self.ax = self.ay = 0
         self.x, self.y = pos
