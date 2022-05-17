@@ -603,30 +603,6 @@ class Tableau():
                     print("point2 =%s" % ([point2]))
         print("---------------------segment:(%s)----------------------" % ([self.segment]))
 
-    def finish(self, reference_timer, actif, nombre_tableaux, son_fin):
-        '''
-    fin_color=(232, 191, 27)
-    #fin_color=(0, 0, 0)
-    print("perso.x = %s :self.finishbg[0]= %s :self.finishhd[0]= %s"%(self.perso.x,self.finishbg[0],self.finishhd[0]))
-    print("perso.y = %s :self.finishbg[1]= %s :self.finishhd[1]= %s"%(self.perso.y,self.finishbg[1],self.finishhd[1]))
-    for point in self.dim_fin:
-      pygame.draw.lines(self.window,fin_color,True,point)
-    pygame.display.flip()
-    if self.finishbg[0]-10<=self.perso.x<=self.finishhd[0]+10 and self.finishhd[1]-10<=self.perso.y+100<=self.finishbg[1]+10:
-      actif+=1
-      pygame.mixer.Channel(0).play(son_fin)
-      if actif > nombre_tableaux-1 :
-        actif=0
-      jeu(reference_timer,actif)
-      '''
-        '''
-    if Finish.finish == True :
-      actif+=1
-      pygame.mixer.Channel(0).play(son_fin)
-      if actif > nombre_tableaux-1 :
-        actif=0
-      jeu(reference_timer,actif)
-    '''
 
 
 # self.finishbg
