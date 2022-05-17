@@ -1,8 +1,6 @@
 import pygame
 import time
 import random
-from math import pi
-import os
 from pygame.locals import *
 
 dimensions = (1024, 574)
