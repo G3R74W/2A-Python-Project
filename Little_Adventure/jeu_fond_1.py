@@ -603,6 +603,30 @@ class Tableau():
                     print("point2 =%s" % ([point2]))
         print("---------------------segment:(%s)----------------------" % ([self.segment]))
 
+    def finish(self, reference_timer, actif, nombre_tableaux, son_fin):
+        '''
+    fin_color=(232, 191, 27)
+    #fin_color=(0, 0, 0)
+    print("perso.x = %s :self.finishbg[0]= %s :self.finishhd[0]= %s"%(self.perso.x,self.finishbg[0],self.finishhd[0]))
+    print("perso.y = %s :self.finishbg[1]= %s :self.finishhd[1]= %s"%(self.perso.y,self.finishbg[1],self.finishhd[1]))
+    for point in self.dim_fin:
+      pygame.draw.lines(self.window,fin_color,True,point)
+    pygame.display.flip()
+    if self.finishbg[0]-10<=self.perso.x<=self.finishhd[0]+10 and self.finishhd[1]-10<=self.perso.y+100<=self.finishbg[1]+10:
+      actif+=1
+      pygame.mixer.Channel(0).play(son_fin)
+      if actif > nombre_tableaux-1 :
+        actif=0
+      jeu(reference_timer,actif)
+      '''
+        '''
+    if Finish.finish == True :
+      actif+=1
+      pygame.mixer.Channel(0).play(son_fin)
+      if actif > nombre_tableaux-1 :
+        actif=0
+      jeu(reference_timer,actif)
+    '''
 
 
 # self.finishbg
@@ -673,11 +697,11 @@ def jeu(reference_timer, actif=0):
     tableaux[1].obstacles[1].setpos((230, 401))
     tableaux[1].pieges.append(Obstacle_rebond(vx=5, vy=3.5))
     tableaux[1].pieges[0].setpos((40, 40))
-    tableaux[1].finishbg = (0, 576)
-    tableaux[1].finishhd = (200, 0)
-    tableaux[1].finishhg = (0, 0)
-    tableaux[1].finishbd = (200, 576)
-    tableaux[1].dim_fin.append(((0, 576), (0, 0), (200, 0), (200, 576)))
+    #tableaux[1].finishbg = (0, 576)
+    #tableaux[1].finishhd = (200, 0)
+    #tableaux[1].finishhg = (0, 0)
+    #tableaux[1].finishbd = (200, 576)
+    #tableaux[1].dim_fin.append(((0, 576), (0, 0), (200, 0), (200, 576)))
     tableaux[1].sol.append(((0, 500), (1024, 500)))
 
     tableaux[2].perso = perso
@@ -688,32 +712,32 @@ def jeu(reference_timer, actif=0):
     tableaux[2].obstacles.append(Caisse())
     tableaux[2].obstacles[1].setpos((800, 401))
     tableaux[2].pieges.append(Flame())
-    tableaux[2].pieges[0].setpos((230, 401))
-    tableaux[2].finishbg = (824, 576)
-    tableaux[2].finishhd = (1024, 0)
-    tableaux[2].finishhg = (824, 0)
-    tableaux[2].finishbd = (1024, 576)
-    tableaux[2].dim_fin.append(((824, 576), (824, 0), (1024, 0), (1024, 576)))
+    tableaux[2].pieges[0].setpos((0, 1))
+    #tableaux[2].finishbg = (824, 576)
+    #tableaux[2].finishhd = (1024, 0)
+    #tableaux[2].finishhg = (824, 0)
+    #tableaux[2].finishbd = (1024, 576)
+    #tableaux[2].dim_fin.append(((824, 576), (824, 0), (1024, 0), (1024, 576)))
     tableaux[2].sol.append(((0, 500), (1024, 500)))
 
     tableaux[3].perso = perso
     tableaux[3].fond.append(Fond("fond3.jpg"))
     tableaux[3].fond[0].setpos((dimensions[0] / 2, 0))
     tableaux[3].obstacles.append(Finish(50, 50))
-    tableaux[3].obstacles[0].setpos((100, 200))
+    tableaux[3].obstacles[0].setpos((750, 350))
     tableaux[3].obstacles.append(Caisse())
-    tableaux[3].obstacles[1].setpos((180, 201))
+    tableaux[3].obstacles[1].setpos((650, 400))
     # tableaux30].obstacles[1].setpos((180,476))
     tableaux[3].pieges.append(Flame())
     tableaux[3].pieges[0].setpos((900, 286))
     # tableaux30].sol.append(((0, 500), (300, 500), (400, 200), (650, 350), (1024, 350)))
-    tableaux[3].sol.append(((0, 500), (300, 500), (650, 340), (1024, 340)))
+    tableaux[3].sol.append(((0, 500), (300, 500), (650, 500), (1024, 500)))
     tableaux[3].sol.append(((0, 300), (300, 300)))
-    tableaux[3].finishbg = (130, 201)
-    tableaux[3].finishhd = (230, 0)
-    tableaux[3].finishhg = (130, 0)
-    tableaux[3].finishbd = (230, 201)
-    tableaux[3].dim_fin.append(((130, 201), (130, 0), (230, 0), (230, 201)))
+    #tableaux[3].finishbg = (130, 201)
+    #tableaux[3].finishhd = (230, 0)
+    #tableaux[3].finishhg = (130, 0)
+    #tableaux[3].finishbd = (230, 201)
+    #tableaux[3].dim_fin.append(((130, 201), (130, 0), (230, 0), (230, 201)))
 
     obstacles = tableaux[actif].obstacles + tableaux[actif].pieges + tableaux[actif].enemies
     tableaux[actif].plateforme()
