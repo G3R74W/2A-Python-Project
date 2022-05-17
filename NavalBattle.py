@@ -71,8 +71,8 @@ class Piece:
                     if event.type == MOUSEBUTTONDOWN and event.button == 1:
                         print("piece clicked")
                         self.frame = True
-
         if self.frame:
+            #définit le cadre à dessiner autour d'une certaine pièce
             rect_frame = pygame.Rect(self.pos[0], self.pos[1], self.size * 30 + self.size, 32)
             #place un cadre autour de la piece cliquée
             pygame.draw.rect(window, color, rect_frame, 2)
@@ -122,12 +122,13 @@ class Grid:
             if self.listRect[i].collidepoint((mouseX, mouseY)):
                 #on sauvegarde la variable i en utilisant une variable m
                 m = i
-
+                #boucle for qui permet d'afficher un 'sélecteur' sur la grille
                 for j in range(size):
-
+                    #on verfifie que la zone sélectionnée se situe à l'intérieur de la grille
                     if m < len(self.listRect):
                         pygame.draw.rect(window, (59, 199, 44), self.listRect[m], 2)
                         m += 1
+                    #si on se situe en dehors de la grille --> affichage de la pièce sur les dernières cases dispo
                     else:
                         pygame.draw.rect(window, (59, 199, 44), self.listRect[m-size], 2)
                         m -= size-1
@@ -136,9 +137,11 @@ class Grid:
                         #la boucle for suivante permet de changer la couleur de tous les rect sélectionnés
                         #ex: torpilleur sélectionné --> 2 cases coloriées
                         for l in range(size):
+                            #on vérifie que la zone sélectionnée se situe dans la grille
                             if i < len(self.listRect):
                                 j = i // 10
                                 k = i % 10
+                                #on vérifie que les cases sélectionnées ne sont pas encore utilisées
                                 if self.grid[j][k] == 0:
                                     self.grid[j][k] = 1
                                     print(self.grid)

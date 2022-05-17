@@ -1,3 +1,5 @@
+#-*- coding:UTF-8 -*-
+
 import pygame, sys, time, random, os, math
 from time import*
 from pygame import*
@@ -19,7 +21,6 @@ arrow = pygame.image.load('img/arrow2.png')
 sound_on = pygame.image.load('img/sound_on1.jpg')
 sound_off = pygame.image.load('img/sound_off.png')
 
-
 #mixer (music settings)
 pygame.mixer.set_num_channels(4)
 background_music = pygame.mixer.Sound('music/background_soundtrack.mp3')
@@ -31,7 +32,6 @@ canal_1 = pygame.mixer.Channel(0)
 canal_2 = pygame.mixer.Channel(1)
 canal_3 = pygame.mixer.Channel(2)
 canal_4 = pygame.mixer.Channel(3)
-
 
 class button() :
     global black
@@ -285,8 +285,6 @@ def main_squareGame() :
             else :
                 main_highscore = int(content)
             show_highscore.close()
-
-
 
 
         background_animation()

@@ -10,6 +10,8 @@ from collision import*
 import NavalBattle
 from NavalBattle import*
 import time
+import SpeedJump
+from SpeedJump import*
 
 def window_init():
 	# initialisation pygame
@@ -32,6 +34,7 @@ def window_creation():
 	window.blit(logo, (100, 0))
 
 def button_creation():
+	"""function qui permet de créer les différents bouttons utilisés"""
 	# creating different buttons
 	button1 = Button('The Square Game', 200, 40, (310, 300), 5)
 	button2 = Button('The naval Battle', 200, 40, (310, 370), 5)
@@ -56,6 +59,7 @@ def main():
 	window_init()
 	button1, button2, button3, button4, button5 = button_creation()
 	window_creation()
+	#début de la boucle principale
 	while run:
 		#display buttons on the screen
 		button1.draw(window)
@@ -64,6 +68,7 @@ def main():
 		button4.draw(window)
 		button5.draw(window)
 
+		#on teste si les bouttons sont cliqués
 		if button1.pressed == True:
 			print("starting square game")
 			time.sleep(0.4)
@@ -80,6 +85,10 @@ def main():
 
 		if button3.pressed == True:
 			print("starting speed jump")
+			time.sleep(0.2)
+			SpeedJump.menu_jeu()
+			button3.pressed = False
+			window_creation()
 
 		if button4.pressed == True:
 			print("starting piano hero")
@@ -95,6 +104,7 @@ def main():
 		clock.tick(60)
 	pygame.quit()
 
-
+#on appelle la fonction main
+#celle-ci lance le menu principale et permet d'accéder aux différents jeux
 if __name__ == '__main__':
 	main()
