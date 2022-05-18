@@ -5,8 +5,9 @@ import socket    # sockets, obviously
 import sys       # command-line arguments
 import time      # time.sleep
 import threading # multi-threading
+import IP_perso
 
-HOST = "127.0.0.1"  # standard loopback interface address (localhost)
+HOST = "192.168.43.89"  # standard loopback interface address (localhost)
 PORT = 16861        # port to listen on (non-privileged ports are > 1023)
 
 # NOTE

@@ -4,6 +4,7 @@ import socket
 import threading
 import sys
 import ping3 as ping
+import IP_perso
 
 HOST = "192.168.43.89"  # Standard loopback interface address (localhost)
 PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
@@ -53,38 +54,6 @@ def server_echo():
     print(f"server_echo: ...")
   print(f"server_echo: END")
     
-def get_ip():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.settimeout(0)
-    try:
-        # on cree une socket vers une adresse qui n'a pas d' importance
-        # puis on obtient le premier element du nom de la socket
-        # cela nous donne notre IP
-        s.connect(('10.255.255.255', 1))
-        IP = s.getsockname()[0]
-    except Exception:
-        IP = '127.0.0.1'
-    finally:
-        s.close()
-    return IP
-
-def list_host (IP):
-  # IP est une chaine sous la forme X1.X2.X3.X4
-  # on coupe la chaine sur les points 
-  # puis on recupere les 3 premiers X pour avoir le reseau
-  # une fois qu'on a le reseau on creer une liste 
-  #avec toutes possible les ip du reseau 
-  reseau= ""
-  list_IP = IP.split(".")
-  i=0
-  for i in range(3):
-    reseau += list_IP[i] + "."
-  list_host = []
-  print("RESEAU = %s"%(reseau))
-  for j in range (145,147):
-    host = reseau + "%s"%(j)
-    list_host.append(host)
-  return list_host
 
 def test_ping (list_host):
   host_connect = ""
@@ -159,8 +128,8 @@ def test_ping (list_host):
 
 
 if __name__=='__main__':
-  IP = get_ip()
+  IP = IP_perso.get_ip()
   print(IP)
-  list_host = list_host(IP)
+  list_host = IP_perso.list_host(IP)
   ##print(list_host)
   test_ping(list_host)
