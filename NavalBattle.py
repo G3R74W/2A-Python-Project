@@ -147,12 +147,15 @@ class Grid:
                             m += self.size[0]
                         #si on se situe en dehors de la grille --> affichage de la pièce sur les dernières cases dispo
                         else:
-                            pygame.draw.rect(window, (59, 199, 44), self.listRect[m-10], 2)
-                            m -= self.size[0]*size
+                            pygame.draw.rect(window, (59, 199, 44), self.listRect[m-self.size[0]*size], 2)
+                            m -= self.size[0]*size - self.size[0]
+
+
                 for event in pygame.event.get():
                     if event.type == MOUSEBUTTONDOWN and event.button == 1:
                         #la boucle for suivante permet de changer la couleur de tous les rect sélectionnés
                         #ex: torpilleur sélectionné --> 2 cases coloriées
+                        #cad. placer les navires
                         for l in range(size):
                             #on vérifie que la zone sélectionnée se situe dans la grille
                             #il faut également vérifier l'orientation du navire
@@ -180,23 +183,23 @@ class Grid:
                                         placed = True
 
                             #positionnement pour navire à la verticale
-                            if i < len(self.listRect) and rotate == True :
-                                k = i // 10
-                                j = i % 10
+                            if i + self.size[0] < len(self.listRect)+self.size[0] and rotate == True :
+                                j = i // 10
+                                k = i % 10
                                 #on vérifie que les cases sélectionnées ne sont pas encore utilisées
                                 if self.grid[j][k] == 0:
                                     self.grid[j][k] = 1
                                     print(self.grid)
-                                    i += 1
+                                    i += self.size[0]
                                     placed = True
                             else:
                                 if rotate == True:
-                                    k = (i-size) // 10
-                                    j = (i-size) % 10
+                                    j = (i-self.size[0]*size) // 10
+                                    k = (i-self.size[0]*size) % 10
                                     if self.grid[j][k] == 0:
                                         self.grid[j][k] = 1
                                         print(self.grid)
-                                        i -= size-1
+                                        i -= self.size[0]*size - self.size[0]
                                         placed = True
                         if placed:
                             return True
