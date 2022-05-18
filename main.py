@@ -33,6 +33,10 @@ def window_creation():
 	logo = pygame.image.load('img/logo.PNG')
 	window.blit(logo, (100, 0))
 
+	#chat icon
+	chatIcon = pygame.image.load('img/chatIcon.png')
+	window.blit(chatIcon, (700, 0))
+
 def button_creation():
 	"""function qui permet de créer les différents bouttons utilisés"""
 	# creating different buttons
