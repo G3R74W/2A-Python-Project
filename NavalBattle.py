@@ -20,6 +20,7 @@ class Piece:
         self.frame = False
         self.collision = False
         self.placed = False
+        self.sunk = False
 
         #permet de compter le nombre de pieces d'un type donné
         #attribut utilisé lors du placement des pieces
@@ -114,7 +115,7 @@ class Grid:
             yPos += 31
         return color
 
-    def placement(self, window, size):
+    def placement(self, window, size, rotate):
         """permet de placer les navires sur la grille"""
         mouseX, mouseY = pygame.mouse.get_pos()
         placed = False
@@ -122,23 +123,44 @@ class Grid:
             if self.listRect[i].collidepoint((mouseX, mouseY)):
                 #on sauvegarde la variable i en utilisant une variable m
                 m = i
-                #boucle for qui permet d'afficher un 'sélecteur' sur la grille
-                for j in range(size):
-                    #on verfifie que la zone sélectionnée se situe à l'intérieur de la grille
-                    if m < len(self.listRect):
-                        pygame.draw.rect(window, (59, 199, 44), self.listRect[m], 2)
-                        m += 1
-                    #si on se situe en dehors de la grille --> affichage de la pièce sur les dernières cases dispo
-                    else:
-                        pygame.draw.rect(window, (59, 199, 44), self.listRect[m-size], 2)
-                        m -= size-1
+                #si l'on souhaite placer les navires à l'horizontale
+                #-->sélecteur à l'horizontale
+                if rotate == False:
+                    #boucle for qui permet d'afficher un 'sélecteur' sur la grille
+                    for j in range(size):
+                        #on verfifie que la zone sélectionnée se situe à l'intérieur de la grille
+                        if m < len(self.listRect):
+                            pygame.draw.rect(window, (59, 199, 44), self.listRect[m], 2)
+                            m += 1
+                        #si on se situe en dehors de la grille --> affichage de la pièce sur les dernières cases dispo
+                        else:
+                            pygame.draw.rect(window, (59, 199, 44), self.listRect[m-size], 2)
+                            m -= size-1
+                #si l'on souhaite placer les navires à la verticale
+                #sélecteur à la verticale
+                if rotate:
+                    #boucle for qui permet d'afficher un 'sélecteur' sur la grille
+                    for j in range(size):
+                        #on vérifie que la zone sélectionnée se situe à l'intérieur de la grille
+                        if m+self.size[0] < len(self.listRect) + self.size[0]:
+                            pygame.draw.rect(window, (59, 199, 44), self.listRect[m], 2)
+                            m += self.size[0]
+                        #si on se situe en dehors de la grille --> affichage de la pièce sur les dernières cases dispo
+                        else:
+                            pygame.draw.rect(window, (59, 199, 44), self.listRect[m-10], 2)
+                            m -= self.size[0]*size
                 for event in pygame.event.get():
                     if event.type == MOUSEBUTTONDOWN and event.button == 1:
                         #la boucle for suivante permet de changer la couleur de tous les rect sélectionnés
                         #ex: torpilleur sélectionné --> 2 cases coloriées
                         for l in range(size):
                             #on vérifie que la zone sélectionnée se situe dans la grille
-                            if i < len(self.listRect):
+                            #il faut également vérifier l'orientation du navire
+                            #si rotate == False --> navire à l'horizontale
+                            #si rotate == True --> navire à la verticale
+
+                            #positionnement pour navire à l'horizontale
+                            if i < len(self.listRect) and rotate == False:
                                 j = i // 10
                                 k = i % 10
                                 #on vérifie que les cases sélectionnées ne sont pas encore utilisées
@@ -148,13 +170,34 @@ class Grid:
                                     i += 1
                                     placed = True
                             else:
-                                j = (i-size) // 10
-                                k = (i-size) % 10
+                                if rotate == False:
+                                    j = (i-size) // 10
+                                    k = (i-size) % 10
+                                    if self.grid[j][k] == 0:
+                                        self.grid[j][k] = 1
+                                        print(self.grid)
+                                        i -= size-1
+                                        placed = True
+
+                            #positionnement pour navire à la verticale
+                            if i < len(self.listRect) and rotate == True :
+                                k = i // 10
+                                j = i % 10
+                                #on vérifie que les cases sélectionnées ne sont pas encore utilisées
                                 if self.grid[j][k] == 0:
                                     self.grid[j][k] = 1
                                     print(self.grid)
-                                    i -= size-1
+                                    i += 1
                                     placed = True
+                            else:
+                                if rotate == True:
+                                    k = (i-size) // 10
+                                    j = (i-size) % 10
+                                    if self.grid[j][k] == 0:
+                                        self.grid[j][k] = 1
+                                        print(self.grid)
+                                        i -= size-1
+                                        placed = True
                         if placed:
                             return True
 
@@ -219,6 +262,7 @@ def main_NavalBattle():
     play = False
     placement = True
     game = False
+    rotate = False
 
     #définition de la variable clock
     #peut être utilisée pour gérer les FPS
@@ -282,6 +326,9 @@ def main_NavalBattle():
             while placement:
                 #refresh de la fenetre à chaque début de boucle
                 window_refresh(window)
+
+                # on définit une variable qui représente la touche pressée.
+                keys = pygame.key.get_pressed()
 
                 #affichage de l'image contenant le texte 'placez vos navires'
                 window.blit(placeShip, (110, 0))
@@ -347,7 +394,15 @@ def main_NavalBattle():
                 #affichage de la grille de jeu
                 gridA.display(window)
 
-                placed = gridA.placement(window, size)
+                if keys[pygame.K_r] and rotate == False:
+                    print('rotate')
+                    time.sleep(0.1)
+                    rotate = True
+                elif keys[pygame.K_r] and rotate == True:
+                    print('rotate')
+                    time.sleep(0.1)
+                    rotate = False
+                placed = gridA.placement(window, size, rotate)
 
                 #si les pièces sont placées, on met à jour le compteur
                 #compteur --> nbre de pièces du même type encore disponibles
