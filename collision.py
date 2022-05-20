@@ -1,7 +1,6 @@
 #-*- coding:UTF-8 -*-
 
 import pygame, sys, time, random, os, math
-from time import*
 from pygame import*
 from pygame import mixer
 

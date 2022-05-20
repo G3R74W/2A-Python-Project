@@ -9,9 +9,11 @@ import collision
 from collision import*
 import NavalBattle
 from NavalBattle import*
-import time
 import SpeedJump
 from SpeedJump import*
+import chat
+from chat import*
+import time
 
 def window_init():
 	# initialisation pygame
@@ -33,9 +35,6 @@ def window_creation():
 	logo = pygame.image.load('img/logo.PNG')
 	window.blit(logo, (100, 0))
 
-	#chat icon
-	chatIcon = pygame.image.load('img/chatIcon.png')
-	window.blit(chatIcon, (700, 0))
 
 def button_creation():
 	"""function qui permet de créer les différents bouttons utilisés"""
@@ -46,6 +45,15 @@ def button_creation():
 	button4 = Button('Piano Hero', 200, 40, (310, 510), 5)
 	button5 = Button('Quit', 200, 40, (310, 580), 5)
 	return button1, button2, button3, button4, button5
+
+def mouse_collision(object):
+	"""fonction qui permet de tester la collision de la souris avec un objet"""
+	mouseX, mouseY = pygame.mouse.get_pos()
+	if object.collidepoint((mouseX, mouseY)):
+		return True
+	else:
+		return False
+
 
 def main():
 	#variables
@@ -60,6 +68,15 @@ def main():
 	line_color = (179, 254, 255)
 	background_color = (191, 255, 107)
 
+	#window rectangle
+	rectWindow = window.get_rect()
+
+	#chat icon
+	chatIcon = pygame.image.load('img/chatIcon.png')
+	rectChat = chatIcon.get_rect()
+	rectChat.topright = rectWindow.topright
+
+
 	window_init()
 	button1, button2, button3, button4, button5 = button_creation()
 	window_creation()
@@ -71,6 +88,8 @@ def main():
 		button3.draw(window)
 		button4.draw(window)
 		button5.draw(window)
+		#window.blit(chatIcon, (700, 0))
+		window.blit(chatIcon, rectChat)
 
 		#on teste si les bouttons sont cliqués
 		if button1.pressed == True:
@@ -100,6 +119,18 @@ def main():
 		if button5.pressed == True:
 			#quit
 			run = False
+
+		#on détecte la collision de la souris avec l'icone de tchat
+		collision = mouse_collision(rectChat)
+
+		#si il y a collision on vérifie si l'utilisateur clique également
+		if collision:
+			for event in pygame.event.get():
+				if event.type == MOUSEBUTTONDOWN and event.button == 1:
+					#si l'utilisateur clique l'icone de tchat, on lance le tchat
+					print('chat icon clicked')
+					main_chat()
+					window_creation()
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
