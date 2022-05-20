@@ -793,8 +793,8 @@ def jeu(reference_timer, actif=0):
                 pygame.mixer.Channel(0).play(son_fin)
                 if actif > nombre_tableaux - 1:
                     END(timer)
-                    pygame.quit()
-
+                    continu = False
+                    actif = 0
 
 
 
