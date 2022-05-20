@@ -366,7 +366,10 @@ def server():
   print(f"server_echo: END")
   return conn, client
 
-
+def tir (sock,i,msg):
+    sock.sendall("%s : %s"%(msg,i))
+    recu = message(sock, "feu")
+    return recu
 
 def main_NavalBattle():
     """fonction main du jeu naval battle"""
@@ -460,6 +463,7 @@ def main_NavalBattle():
 
         #début de la boucle de jeu
         while play:
+            compteur_tour = 0
             list_IP = connection(15,20)
             sock, Connect = client(list_IP)
             if not Connect :
@@ -608,6 +612,8 @@ def main_NavalBattle():
 
                 #début de la boucle du jeu après placement des navires
                 while game:
+                    if client==True and compteur_tour ==0:
+                        msg="commencement"
                     #refresh de la fenetre
                     window_refresh(window)
 
@@ -620,8 +626,12 @@ def main_NavalBattle():
                     gridA.listRect = []
                     gridB.listRect = []
                     #mise à jour de la fenetre
-                    pygame.display.update()
+                    mouseX, mouseY = pygame.mouse.get_pos()
+                    for i in range(len(gridB.listRect)):
+                        if gridB.listRect[i].collidepoint((mouseX, mouseY)):
+                            message_recu = tir(sock,i,msg)
 
+                    pygame.display.update()
                     # permet à l'utilisateur de quitter le jeu --> retour au menu principal
                     for event in pygame.event.get():
                         if event.type == pygame.QUIT:
