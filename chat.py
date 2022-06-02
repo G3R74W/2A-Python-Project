@@ -25,7 +25,9 @@ def button_creation():
     """creation des differents bouttons"""
     button1 = Button('Back to menu', 200, 40, (290, 670), 5)
     button2 = Button('Send', 200, 40, (600, 680), 5)
-    return button1, button2
+    button3 = Button('^', 20, 20, (100, 100), 5)
+    button4 = Button('v', 20, 20, (100, 130), 5)
+    return button1, button2, button3, button4
 
 def message_content():
     """permet l'attribution du contenu du fichier.txt contenant l'entièreté des messages"""
@@ -34,7 +36,7 @@ def message_content():
     AllMessages.close()
     return content
 
-def message_display(window, content):
+def message_display(window, content, counter):
     """permet d'afficher les messages précédents dans le chat"""
     xPos = 600
     nbr_message = len(content)
@@ -43,7 +45,7 @@ def message_display(window, content):
     #on test si il y a plus de 12 messages dans le fichiers
     if nbr_message > 12:
         depassement = nbr_message - 12
-        yPos = 50 - depassement*50
+        yPos = counter*50 - depassement*50
     else:
         yPos = 50
     for i in range(len(content)):
@@ -59,7 +61,7 @@ def main_chat():
     window_init()
     clock = pygame.time.Clock()
 
-    button1, button2 = button_creation()
+    button1, button2, button3, button4 = button_creation()
 
     #colors
     white = (255,255,255)
@@ -71,7 +73,7 @@ def main_chat():
     #booleans
     run = True
 
-
+    counter = 1
     while run:
         #button1.draw(window)
 
@@ -79,11 +81,25 @@ def main_chat():
 
         pygame.draw.rect(window, white, (0, 0, 800, 650))
         button2.draw(window)
+        button3.draw(window)
+        button4.draw(window)
 
         if button1.pressed == True:
             print('back to main menu')
             button1.pressed = False
             run = False
+
+        if button3.pressed == True:
+            print('up')
+            time.sleep(0.2)
+            button3.pressed = False
+            counter += 1
+
+        if button4.pressed == True:
+            print('down')
+            time.sleep(0.2)
+            button4.pressed = False
+            counter -= 1
 
         for event in pygame.event.get():
             for box in boxlist:
@@ -100,7 +116,7 @@ def main_chat():
                 run = False
         content = message_content()
 
-        message_display(window, content)
+        message_display(window, content, counter)
 
         pygame.display.update()
         inputBox.update()

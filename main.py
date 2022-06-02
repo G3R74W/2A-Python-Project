@@ -7,8 +7,8 @@ import Button
 from Button import*
 import collision
 from collision import*
-import NavalBattle
-from NavalBattle import*
+import NavalBattle2
+from NavalBattle2 import*
 import SpeedJump
 from SpeedJump import*
 import chat
