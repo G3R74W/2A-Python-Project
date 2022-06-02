@@ -6,6 +6,7 @@ import Button
 from Button import*
 import InputBox
 from InputBox import*
+import time
 
 def window_init():
     """initialisation de la fenêtre"""
@@ -26,6 +27,23 @@ def button_creation():
     button2 = Button('Send', 200, 40, (600, 680), 5)
     return button1, button2
 
+def message_content():
+    """permet l'attribution du contenu du fichier.txt contenant l'entièreté des messages"""
+    AllMessages = open('messages.txt', 'r')
+    content = AllMessages.readlines()
+    AllMessages.close()
+    return content
+
+def message_display(window, content):
+    """permet d'afficher les messages précédents dans le chat"""
+    xPos = 600
+    yPos = 50
+    for i in range(len(content)):
+        text = font.render(content[i], 1, (0, 0, 0))
+        window.blit(text, (xPos, yPos))
+        yPos += 50
+
+
 def main_chat():
     """main du chat"""
     window = window_init()
@@ -40,29 +58,40 @@ def main_chat():
     #input box
     inputBox = InputBox()
     boxlist = [inputBox]
+
     #booleans
     run = True
+
+
     while run:
         #button1.draw(window)
 
+        content = message_content()
+
         pygame.draw.rect(window, white, (0, 0, 800, 650))
         button2.draw(window)
-
 
         if button1.pressed == True:
             print('back to main menu')
             button1.pressed = False
             run = False
 
-
-        #permet à l'utilisateur de quitter le jeu --> retour au menu principal
         for event in pygame.event.get():
             for box in boxlist:
                 message = box.handle_event(event, window)
+                if message != '':
+                    AllMessage = open('messages.txt', 'a')
+                    AllMessage.write('\n' + message)
+                    box.message = ''
+                    AllMessage.close()
+
+            # permet à l'utilisateur de quitter le jeu --> retour au menu principal
             if event.type == pygame.QUIT:
                 run = False
-        text = font.render(message, 1, (0, 0, 0))
-        window.blit(text, (0, 0))
+        content = message_content()
+
+        message_display(window, content)
+
         pygame.display.update()
         inputBox.update()
         window_refresh(window)

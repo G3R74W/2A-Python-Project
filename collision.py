@@ -224,9 +224,6 @@ light_color = (220,220,220)
 yellow = (255,255,0)
 green = (0,255,100)
 
-
-
-
 #buttons
 play = button(300, 300, 'PLAY')
 rules = button(300,400, 'HELP')
@@ -310,7 +307,7 @@ def main_squareGame() :
             play_Bool = True
             difficulty = True
             lost = False
-            #open highscore file
+            #open highscore file in writting mode
             highscore_file = open('highscore.txt',"w")
 
 
