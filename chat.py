@@ -37,11 +37,20 @@ def message_content():
 def message_display(window, content):
     """permet d'afficher les messages précédents dans le chat"""
     xPos = 600
-    yPos = 50
+    nbr_message = len(content)
+
+    #on peut afficher maximum 12 messages sur l'écran
+    #on test si il y a plus de 12 messages dans le fichiers
+    if nbr_message > 12:
+        depassement = nbr_message - 12
+        yPos = 50 - depassement*50
+    else:
+        yPos = 50
     for i in range(len(content)):
         text = font.render(content[i], 1, (0, 0, 0))
         window.blit(text, (xPos, yPos))
         yPos += 50
+
 
 
 def main_chat():
@@ -84,6 +93,7 @@ def main_chat():
                     AllMessage.write('\n' + message)
                     box.message = ''
                     AllMessage.close()
+
 
             # permet à l'utilisateur de quitter le jeu --> retour au menu principal
             if event.type == pygame.QUIT:
