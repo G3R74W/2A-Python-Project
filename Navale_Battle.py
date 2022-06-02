@@ -392,6 +392,8 @@ def tir (sock,i,cmpt_touche):
 def main_NavalBattle():
     """fonction main du jeu naval battle"""
 
+    client = False
+    Connect = False
     #attribution de la variable window
     window = window_init()
 
@@ -438,6 +440,7 @@ def main_NavalBattle():
         #début de la boucle menu
         while menu:
             cmpt_touche = 0
+            message_recu = ""
             #refresh de la fenetre à chaque début de boucle
             window_refresh(window)
 
@@ -650,8 +653,10 @@ def main_NavalBattle():
                     mouseX, mouseY = pygame.mouse.get_pos()
                     for i in range(len(gridB.listRect)):
                         if gridB.listRect[i].collidepoint((mouseX, mouseY)):
-                            if gridB.listRect[i] != 0:
-                                message_recu,cmpt_touche = tir(sock,i)
+                            if event.type == MOUSEBUTTONDOWN and event.button == 1:
+
+                                if gridB.listRect[i] == 0:
+                                    message_recu, cmpt_touche = tir(sock,i)
 
                     if message_recu == "touche":
                         gridB.listRect[i] = 3
@@ -662,7 +667,8 @@ def main_NavalBattle():
                         fin = True
                         win = False
                     else:
-                        print("%s"%(message_recu))
+                        x=1
+                        #print("%s"%(message_recu))
 
                     if cmpt_touche >= 17:
                         win = True
