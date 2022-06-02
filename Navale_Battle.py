@@ -249,7 +249,7 @@ def connection(min = 0, max = 255):
     return list_IP
 
 
-def client(list_host):
+def clientfct(list_host):
    host_connect = ""
    conversation = True
    Connection = False
@@ -331,6 +331,16 @@ def message(socket, message):
     print(recu)
     return recu
 
+def victoire(socket):
+    message(socket, "WIN")
+
+def recep(socket,listRect):
+    binrecu = socket.recv(1024)
+    msg = binrecu.cut(":")
+    if listRect[msg[2]] == 0:
+        socket.sendall("rate")
+    elif listRect[msg[2]] == 1:
+        socket.sendall("touche")
 def server():
   print(f"server_echo: BEGIN")
   bLoop1=True
@@ -366,10 +376,18 @@ def server():
   print(f"server_echo: END")
   return conn, client
 
-def tir (sock,i,msg):
-    sock.sendall("%s : %s"%(msg,i))
-    recu = message(sock, "feu")
-    return recu
+def tir (sock,i,cmpt_touche):
+    recu = message(sock, "tir : %s" % (i))
+    print("tir en %s "%(i))
+    if recu == "touche":
+        cmpt_touche +=1
+    if cmpt_touche <= 16:
+        sock.sendall("Bien recu".encode("utf-8"))
+
+
+    elif cmpt_touche >= 17:
+        sock.sendall("WIN".encode("utf-8"))
+    return recu,cmpt_touche
 
 def main_NavalBattle():
     """fonction main du jeu naval battle"""
@@ -419,6 +437,7 @@ def main_NavalBattle():
     while run:
         #début de la boucle menu
         while menu:
+            cmpt_touche = 0
             #refresh de la fenetre à chaque début de boucle
             window_refresh(window)
 
@@ -439,6 +458,7 @@ def main_NavalBattle():
                 play = True
                 placement = True
                 menu = False
+                fin = False
 
             if button2.pressed == True:
                 print("how to play")
@@ -465,11 +485,12 @@ def main_NavalBattle():
         while play:
             compteur_tour = 0
             list_IP = connection(15,20)
-            sock, Connect = client(list_IP)
+            sock, Connect = clientfct(list_IP)
             if not Connect :
                 sock, client = server()
             if client == True or Connect == True:
                 while placement:
+                    win = False
                     #refresh de la fenetre à chaque début de boucle
                     window_refresh(window)
 
@@ -612,10 +633,10 @@ def main_NavalBattle():
 
                 #début de la boucle du jeu après placement des navires
                 while game:
-                    if client==True and compteur_tour ==0:
-                        msg="commencement"
+
                     #refresh de la fenetre
                     window_refresh(window)
+                    msg=""
 
                     #affichage de la grille de jeu
                     gridA.display(window)
@@ -629,8 +650,22 @@ def main_NavalBattle():
                     mouseX, mouseY = pygame.mouse.get_pos()
                     for i in range(len(gridB.listRect)):
                         if gridB.listRect[i].collidepoint((mouseX, mouseY)):
-                            message_recu = tir(sock,i,msg)
+                            if gridB.listRect[i] != 0:
+                                message_recu,cmpt_touche = tir(sock,i)
 
+                    if message_recu == "touche":
+                        gridB.listRect[i] = 3
+                        print("navire touche")
+                    elif message_recu == "rate" :
+                        gridB.listRect[i] = 2
+                    elif message_recu == "WIN":
+                        fin = True
+                        win = False
+                    else:
+                        print("%s"%(message_recu))
+
+                    if cmpt_touche >= 17:
+                        win = True
                     pygame.display.update()
                     # permet à l'utilisateur de quitter le jeu --> retour au menu principal
                     for event in pygame.event.get():
@@ -639,6 +674,42 @@ def main_NavalBattle():
                             play = False
                             placement = False
                             menu = True
+                    while fin:
+                        Bouton_replay = Button('Rejouer ?', 200, 40, (100, 600), 5)
+                        Bouton_quit = Button('Fuir ?', 200, 40, (500, 600), 5)
+
+
+                        grey = (50, 50, 50)
+                        white = (255, 255, 255)
+                        window.fill(white)
+                        font = pygame.font.Font(None, 50)
+                        if win:
+                            text1 = font.render("Bravo vous avez vaincu votre adversaire", 1, grey)
+                            window.blit(text1, (50, 300))
+                            text2 = font.render("plus aucun pirates ne sillonne vos eaux", 1, grey)
+                            window.blit(text2, (100, 400))
+                        else:
+                            text1 = font.render("Vous avez subi une defaite cuisante", 1, grey)
+                            window.blit(text1, (50, 300))
+                            text2 = font.render("mais cela n'est que partie remise", 1, grey)
+                            window.blit(text2, (100, 400))
+
+                        Bouton_quit.draw(window)
+                        Bouton_replay.draw(window)
+                        if Bouton_replay.pressed == True:
+                            game = False
+                            play = False
+                            placement = True
+                            fin = False
+                            menu = False
+                        if Bouton_quit.pressed == True:
+                            game = False
+                            play = False
+                            placement = False
+                            fin = False
+                            menu = True
+
+                        pygame.display.update()
 
         #permet à l'utilisateur de quitter le jeu --> retour au menu principal
         for event in pygame.event.get():
