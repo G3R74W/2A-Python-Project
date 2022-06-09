@@ -39,6 +39,7 @@ def message_display(window, content, counter):
     """permet d'afficher les messages précédents dans le chat"""
     xPos = 550
     nbr_message = len(content)
+    width = 230
 
     #on peut afficher maximum 12 messages sur l'écran
     #on test si il y a plus de 12 messages dans le fichiers
@@ -55,9 +56,19 @@ def message_display(window, content, counter):
         msgRange = len(content)
 
     for i in range(msgRange):
+        #on initialise le compteur de caractères par ligne à 0
+        car_counter = 0
+
+        #hauteur du rectangle qui entour le message
+        height = 30
+
         #on supprime le caractère de retour chariot pour qu'il ne s'affiche pas dans pygame
         msgLength = len(content[i])-1
         message = ""
+
+        #on identifie l'envoyeur à partir du code placé au début du message
+        #0 si le message est envoyé par nous
+        #1 si le message est envoyé par l'autre utilisateur
         if content[i][0] == "0":
             xPos = 550
             sender = "you:"
@@ -67,15 +78,24 @@ def message_display(window, content, counter):
             sender = "other:"
             msgColor = (162, 166, 168)
 
+        #on retire le code devant le message qui permet d'identifier l'envoyeur
         for j in range(msgLength):
             if content[i][j] =="0" or content[i][j] == "1":
                 message += ""
             else:
                 message += content[i][j]
-        pygame.draw.rect(window, msgColor, (xPos-10, yPos-5, 230, 30), border_radius=4)
-        text = font.render(sender+message, 1, (0, 0, 0))
+            #compteur de caractère par ligne
+            car_counter += 1
+            if car_counter == 19:
+                car_counter = 0
+                height += 50
+
+        pygame.draw.rect(window, msgColor, (xPos-10, yPos-5, width, height), border_radius=4)
+        text = font.render(message, 1, (0, 0, 0))
         window.blit(text, (xPos, yPos))
+
         yPos += 50
+
 
 def main_chat():
     """main du chat"""
@@ -126,9 +146,20 @@ def main_chat():
         for event in pygame.event.get():
             for box in boxlist:
                 message = box.handle_event(event, window)
+                #compteur de caractères
+                car_counter = 0
                 if message != '':
                     AllMessage = open('messages.txt', 'a')
-                    AllMessage.write("0"+message + '\n')
+                    AllMessage.write("0")
+                    for k in range(len(message)):
+                        AllMessage.write(message[k])
+                        car_counter += 1
+                        if car_counter == 19:
+                            AllMessage.write("\n"+'0')
+                            car_counter = 0
+
+
+                    AllMessage.write('\n')
                     box.message = ''
                     AllMessage.close()
 

@@ -32,5 +32,15 @@ bonjour
 hallo
 0test
 0j'envoie un msg
-0si le message est trop long
 0test
+0test
+0ce message est beau
+0coup trop long
+0ce message es
+0t beaucoup tr
+0op long
+0ce message est beau
+0coup trop long
+0test
+0message trop long p
+0our ce chat
