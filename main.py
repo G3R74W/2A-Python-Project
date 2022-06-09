@@ -54,7 +54,6 @@ def mouse_collision(object):
 	else:
 		return False
 
-
 def main():
 	#variables
 	font = pygame.font.Font(None, 70)

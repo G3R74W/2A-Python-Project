@@ -1,5 +1,4 @@
 #-*- coding: UTF-8 -*-
-
 import pygame
 from pygame import*
 import Button
@@ -59,13 +58,24 @@ def message_display(window, content, counter):
         #on supprime le caractère de retour chariot pour qu'il ne s'affiche pas dans pygame
         msgLength = len(content[i])-1
         message = ""
+        if content[i][0] == "0":
+            xPos = 550
+            sender = "you:"
+            msgColor = (50, 168, 131)
+        elif content[i][0] == "1":
+            xPos = 50
+            sender = "other:"
+            msgColor = (162, 166, 168)
+
         for j in range(msgLength):
-            message += content[i][j]
-        text = font.render("you : "+message, 1, (0, 0, 0))
+            if content[i][j] =="0" or content[i][j] == "1":
+                message += ""
+            else:
+                message += content[i][j]
+        pygame.draw.rect(window, msgColor, (xPos-10, yPos-5, 230, 30), border_radius=4)
+        text = font.render(sender+message, 1, (0, 0, 0))
         window.blit(text, (xPos, yPos))
         yPos += 50
-
-
 
 def main_chat():
     """main du chat"""
@@ -91,7 +101,7 @@ def main_chat():
 
         content = message_content()
 
-        pygame.draw.rect(window, white, (0, 0, 800, 650))
+        pygame.draw.rect(window, (99, 137, 153), (0, 0, 800, 650))
         button2.draw(window)
         button3.draw(window)
         button4.draw(window)
@@ -118,7 +128,7 @@ def main_chat():
                 message = box.handle_event(event, window)
                 if message != '':
                     AllMessage = open('messages.txt', 'a')
-                    AllMessage.write(message + '\n')
+                    AllMessage.write("0"+message + '\n')
                     box.message = ''
                     AllMessage.close()
 
