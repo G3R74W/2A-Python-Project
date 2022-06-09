@@ -337,22 +337,27 @@ def victoire(socket):
     message(socket, "WIN")
 
 def recep(socket,listRect):
-    binrecu = socket.recv(1024)
+    binrecu = socket.recv(1024).decode("utf-8")
     #binrecu = "tir : 41"
-
-    print("reception = : %s"%(binrecu))
-    msg = binrecu.split(":")
-    i = int(msg[1])
-    j = i // 10
-    k = i %  10
-    print("reception i = %s j = %s k = %s"%(i,j,k))
-    if listRect[j][k] == 0:
-        socket.sendall("rate")
-        print("---envoie rate")
-    elif listRect[j][k] == 1:
-        socket.sendall("touche")
-        print("---envoie touche")
-    return j,k
+    if not binrecu:
+        j=0
+        k=0
+        tir = False
+    else:
+        tir = True
+        print("reception = : %s"%(binrecu))
+        msg = binrecu.split(":")
+        i = int(msg[1])
+        j = i // 10
+        k = i %  10
+        print("reception i = %s j = %s k = %s"%(i,j,k))
+        if listRect[j][k] == 0:
+            socket.sendall("rate")
+            print("---envoie rate")
+        elif listRect[j][k] == 1:
+            socket.sendall("touche")
+            print("---envoie touche")
+    return j,k,tir
 def server():
   print(f"server_echo: BEGIN")
   bLoop1=True
@@ -668,6 +673,7 @@ def main_NavalBattle():
 
                 #début de la boucle du jeu après placement des navires
                 while game:
+                    shoot = False
 
                     #refresh de la fenetre
                     window_refresh(window)
@@ -708,12 +714,12 @@ def main_NavalBattle():
                               else:
                                 x=1
                     elif turn == 2:
-                        j,k = recep(sock,gridA.grid)
+                        j,k,shoot = recep(sock,gridA.grid)
                         print(gridA.grid)
-                        if gridA.grid[j][k] == 0:
+                        if gridA.grid[j][k] == 0 and shoot:
                             gridA.grid[j][k] = 2
                             print(gridA.grid)
-                        elif gridA.grid[j][k] == 1:
+                        elif gridA.grid[j][k] == 1 and shoot:
                             gridA.grid[j][k] = 3
                             print(gridA.grid)
                         turn = 1
