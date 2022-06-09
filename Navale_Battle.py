@@ -268,7 +268,7 @@ def clientfct(list_host):
 
            destination = (host, 65432)
            error_connect = test_socket.connect_ex(destination)
-
+           
            if error_connect == 0:
                print("   le port : 65432 est ouvert")
                try:
@@ -325,6 +325,9 @@ def clientfct(list_host):
    return test_socket, Connection
 
 def message(socket, message):
+    print("socket = %s"%(socket))
+    print("ENTREE DANS MESSAGE")
+
     socket.sendall(message.encode("utf-8"))
     #print("---test---\nsocket = %s et messge = %s \n---fin test ---"%(socket,message))
     binrecu = socket.recv(1024)
@@ -334,69 +337,77 @@ def message(socket, message):
     return recu
 
 def victoire(socket):
-    message(socket, "WIN")
+    message(socket, "WIN:10")
 
 def recep(socket,listRect):
     binrecu = socket.recv(1024).decode("utf-8")
-    #binrecu = "tir : 41"
+    ACR = False
+    print("ENTREE DANS RECEPTION \n message recu = %s" %(binrecu))
     if not binrecu:
         j=0
         k=0
         tir = False
+    elif binrecu == "Bien recu":
+        j=1
+        k=1
+        tir = False
+        ACR = True
     else:
         tir = True
-        print("reception = : %s"%(binrecu))
+        print("reception =  %s"%(binrecu))
         msg = binrecu.split(":")
         i = int(msg[1])
         j = i // 10
         k = i %  10
         print("reception i = %s j = %s k = %s"%(i,j,k))
         if listRect[j][k] == 0:
-            socket.sendall("rate")
+            msg = "rate : %s"%(i)
+            socket.sendall(msg.encode("utf-8"))
             print("---envoie rate")
         elif listRect[j][k] == 1:
-            socket.sendall("touche")
+            msg = "touche : %s"%(i)
+            socket.sendall(msg.encode("utf-8"))
             print("---envoie touche")
-    return j,k,tir
+    return j,k,tir,ACR
 def server():
   print(f"server_echo: BEGIN")
   bLoop1=True
   client = False
   while bLoop1:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-      s.bind((HOST, PORT)) # on ouvre le port de communication special
+      prise = socket.create_server((HOST, PORT)) # on ouvre le port de communication special
       print(f"server_echo: (listen)")
       s.listen() # on attend que qqln ce connecte
       conn, addr = s.accept()# on accept ca connection
       #conn = nouvelle socket pouvant etre utilise pour envoye et recevoir des message
       #addr = liens avec la socket de l'autre cote
-      with conn:
+      with prise:
         bLoop1 = False
         #on verifie que c'est bien notre application
-        data = conn.recv(1024)
+        data = prise.recv(1024)
         sData = data.decode('utf-8')
         print(f"server_echo: Received {sData}")
         if sData=='Test-Serveur':
           verif = "ok"
-          conn.sendall(verif.encode("utf-8"))
-          print(f"server_echo: Connected by {addr}")
+          prise.sendall(verif.encode("utf-8"))
+          print(f"server_echo: Connected by")
           # on attend les message de l'utilisateur on le decode, l'ecrit
           # l'interpret, et on le revoie
           client = True
         else:
           refus="Le message d'autentification n'est pas le bon"
           print(refus)
-          conn.sendall(refus.encode("utf-8"))
+          prise.sendall(refus.encode("utf-8"))
         print(f"server_echo: loop ended")
       print(f"server_echo: connexion closed")
     print(f"server_echo: ...")
   print(f"server_echo: END")
-  return conn, client
+  return prise, client
 
 def tir (sock,i,cmpt_touche):
     recu = message(sock, "tir : %s" % (i))
     print("--- envoie tir en %s "%(i))
-    if recu == "touche":
+    if recu == "touche : %i"%(i):
         cmpt_touche +=1
     if cmpt_touche <= 16:
         sock.sendall("Bien recu".encode("utf-8"))
@@ -508,10 +519,11 @@ def main_NavalBattle():
             compteur_tour = 0
             #Connect = True
             #sock = 42
-            #turn = 2
-            list_IP = connection(15,20)
-            sock, Connect = clientfct(list_IP)
-
+            turn = 2
+            #list_IP = connection(15,20)
+            #socketsock, Connect = clientfct(list_IP)
+            debug_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            test_connection = debug_socket.connect_ex((HOST,PORT))
             #mettre un reset de la grille ici
             # creation des grilles
             # gridA --> grille de l'utilisateur
@@ -525,9 +537,22 @@ def main_NavalBattle():
             croiseur = piece_creation(400, 400, 'croiseur')
             porte_avion = piece_creation(400, 500, 'porte avion')
 
+            if test_connection == 0:
+                print("Test envoie du message de verification d'application")
+                debug_socket.sendall("Test-Serveur".encode("utf-8"))
+                binverif = debug_socket.recv(1024).decode("utf-8")
+                if binverif == "ok":
+                    Connect = True
+                    sock = debug_socket
             if not Connect :
-                sock, client = server()
-                turn = 1
+                prise = socket.create_server((HOST, PORT)) # on ouvre le port de communication special
+                prise.listen()
+                sock, addresse = prise.accept()
+                données = sock.recv(1024).decode("utf-8")
+                if données == "Test-Serveur":
+                    sock.sendall("ok".encode("utf-8"))
+                    client = True
+                    turn = 1
             if client == True or Connect == True:
                 while placement:
                     win = False
@@ -700,21 +725,23 @@ def main_NavalBattle():
                                         if gridB.grid[j][k] == 0:
                                             message_recu, cmpt_touche = tir(sock,i,cmpt_touche)
 
+
                                             turn = 2
                                             #time.sleep(0.5)
 
-                              if message_recu == "touche":
-                                gridB.grid[j][k] = 3
-                                #print("navire touche")
-                              elif message_recu == "rate" :
-                                gridB.listRect[j][k] = 2
-                              elif message_recu == "WIN":
+                                            if message_recu == "touche":
+                                                gridB.grid[j][k] = 3
+                                                #print("navire touche")
+                                            elif message_recu == "rate" :
+                                                gridB.grid[j][k] = 2
+
+                              if message_recu == "WIN":
                                 fin = True
                                 win = False
                               else:
                                 x=1
                     elif turn == 2:
-                        j,k,shoot = recep(sock,gridA.grid)
+                        j,k,shoot,ACR = recep(sock,gridA.grid)
                         print(gridA.grid)
                         if gridA.grid[j][k] == 0 and shoot:
                             gridA.grid[j][k] = 2
@@ -722,7 +749,8 @@ def main_NavalBattle():
                         elif gridA.grid[j][k] == 1 and shoot:
                             gridA.grid[j][k] = 3
                             print(gridA.grid)
-                        turn = 1
+                        if ACR:
+                            turn = 1
 
                    # print ("turn = %s"%(turn))
                     if cmpt_touche >= 17:
