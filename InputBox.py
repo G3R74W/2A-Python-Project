@@ -49,4 +49,4 @@ class InputBox:
         # Blit the text.
         window.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
         # Blit the rect.
-        pygame.draw.rect(window, self.color, self.rect, 2)
+        pygame.draw.rect(window, self.color, self.rect, 2, border_radius=6)

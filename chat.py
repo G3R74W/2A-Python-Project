@@ -271,10 +271,47 @@ class Communicator():
                     function(functionObject, data)
 
 def entree(objet):
-    return input().encode('utf-8')
+    AllMessage = open('messages.txt', 'r')
+    msgList = AllMessage.readlines()
+    #longueur de la liste
+    nbMsg = len(msgList)
+    message = msgList[nbMsg-1]
+    AllMessage.close()
+
+    lastNumber = open('numberMessage.txt', 'w+')
+    lstNumber = lastNumber.read()
+
+    if lstNumber == "":
+        lstNumber = "0"
+
+    int(lstNumber)
+
+    if lstNumber < nbMsg:
+        lastNumber.write(nbMsg)
+        lastNumber.close()
+        send = True
+    else:
+        send = False
+        lastNumber.close()
+
+    if send:
+        return message.encode('utf-8')
+    else:
+        return "".encode('utf-8')
 
 def reaction(objet, data):
-    print("|\n|\n| %s\n|\n|\n" % (repr(data)))
+    #compteur de caractères
+    car_counter = 0
+    if data != '':
+        AllMessage = open('messages.txt', 'a')
+        AllMessage.write("1")
+        for k in range(len(data)):
+            AllMessage.write(data[k])
+            car_counter += 1
+            if car_counter == 19:
+                AllMessage.write("\n"+'1')
+                car_counter = 0
+        AllMessage.write('\n')
 
 def ip_main():
     print("__MAIN__")
