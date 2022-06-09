@@ -102,7 +102,7 @@ class Grid:
             Les 1 représente une case avec un navire
             Les 2 représentent une case vide touchée
             Les 3 representent une case avec un navire touchée"""
-
+        self.listRect = []
         q = 0
         yPos = self.pos[1]
         for j in range(self.size[0]):
@@ -326,9 +326,11 @@ def clientfct(list_host):
 
 def message(socket, message):
     socket.sendall(message.encode("utf-8"))
+    #print("---test---\nsocket = %s et messge = %s \n---fin test ---"%(socket,message))
     binrecu = socket.recv(1024)
+    #binrecu = "touche".encode("utf-8")
     recu = binrecu.decode("utf-8")
-    print(recu)
+    print("reception %s"%recu)
     return recu
 
 def victoire(socket):
@@ -336,11 +338,21 @@ def victoire(socket):
 
 def recep(socket,listRect):
     binrecu = socket.recv(1024)
-    msg = binrecu.cut(":")
-    if listRect[msg[2]] == 0:
+    #binrecu = "tir : 41"
+
+    print("reception = : %s"%(binrecu))
+    msg = binrecu.split(":")
+    i = int(msg[1])
+    j = i // 10
+    k = i %  10
+    print("reception i = %s j = %s k = %s"%(i,j,k))
+    if listRect[j][k] == 0:
         socket.sendall("rate")
-    elif listRect[msg[2]] == 1:
+        print("---envoie rate")
+    elif listRect[j][k] == 1:
         socket.sendall("touche")
+        print("---envoie touche")
+    return j,k
 def server():
   print(f"server_echo: BEGIN")
   bLoop1=True
@@ -378,15 +390,17 @@ def server():
 
 def tir (sock,i,cmpt_touche):
     recu = message(sock, "tir : %s" % (i))
-    print("tir en %s "%(i))
+    print("--- envoie tir en %s "%(i))
     if recu == "touche":
         cmpt_touche +=1
     if cmpt_touche <= 16:
         sock.sendall("Bien recu".encode("utf-8"))
-
+        print("---envoie   Bien recu")
+        print("compteur = %s"%(cmpt_touche))
 
     elif cmpt_touche >= 17:
         sock.sendall("WIN".encode("utf-8"))
+        print("---envoie    WIN")
     return recu,cmpt_touche
 
 def main_NavalBattle():
@@ -487,10 +501,28 @@ def main_NavalBattle():
         #début de la boucle de jeu
         while play:
             compteur_tour = 0
+            #Connect = True
+            #sock = 42
+            #turn = 2
             list_IP = connection(15,20)
             sock, Connect = clientfct(list_IP)
+
+            #mettre un reset de la grille ici
+            # creation des grilles
+            # gridA --> grille de l'utilisateur
+            # gridB --> grille du joueur adverse
+            gridA = grid_creation(50, 200)
+            gridB = grid_creation(450, 200)
+
+            # creation des pieces avec l'utilisation de la fonction piece_creation
+            torpilleur = piece_creation(400, 200, 'torpilleur')
+            contre_torpilleur = piece_creation(400, 300, 'contre torpilleur')
+            croiseur = piece_creation(400, 400, 'croiseur')
+            porte_avion = piece_creation(400, 500, 'porte avion')
+
             if not Connect :
                 sock, client = server()
+                turn = 1
             if client == True or Connect == True:
                 while placement:
                     win = False
@@ -639,39 +671,57 @@ def main_NavalBattle():
 
                     #refresh de la fenetre
                     window_refresh(window)
-                    msg=""
+                    message_recu = ""
 
                     #affichage de la grille de jeu
                     gridA.display(window)
                     gridB.display(window)
 
-                    #reinitialisation de la liste contenant les rectangle de la grille A et de la grille B
-                    #évite un dépassement --> index <= 100
-                    gridA.listRect = []
-                    gridB.listRect = []
                     #mise à jour de la fenetre
                     mouseX, mouseY = pygame.mouse.get_pos()
-                    for i in range(len(gridB.listRect)):
-                        if gridB.listRect[i].collidepoint((mouseX, mouseY)):
-                            if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                    #print("souris en : %s %s"%(mouseX,mouseY))
+                    if turn == 1:
+                         for i in range(len(gridB.listRect)):
+                              message_recu = ""
+                              if gridB.listRect[i].collidepoint((mouseX, mouseY)):
+                                    #print("collision")
+                                    if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                                        #print("clique")
+                                        j = i // 10
+                                        k = i % 10
+                                        print("j = %s k = %s" % (j, k))
+                                        #on vérifie que les cases sélectionnées ne sont pas encore utilisées
+                                        if gridB.grid[j][k] == 0:
+                                            message_recu, cmpt_touche = tir(sock,i,cmpt_touche)
 
-                                if gridB.listRect[i] == 0:
-                                    message_recu, cmpt_touche = tir(sock,i)
+                                            turn = 2
+                                            #time.sleep(0.5)
 
-                    if message_recu == "touche":
-                        gridB.listRect[i] = 3
-                        print("navire touche")
-                    elif message_recu == "rate" :
-                        gridB.listRect[i] = 2
-                    elif message_recu == "WIN":
-                        fin = True
-                        win = False
-                    else:
-                        x=1
-                        #print("%s"%(message_recu))
+                              if message_recu == "touche":
+                                gridB.grid[j][k] = 3
+                                #print("navire touche")
+                              elif message_recu == "rate" :
+                                gridB.listRect[j][k] = 2
+                              elif message_recu == "WIN":
+                                fin = True
+                                win = False
+                              else:
+                                x=1
+                    elif turn == 2:
+                        j,k = recep(sock,gridA.grid)
+                        print(gridA.grid)
+                        if gridA.grid[j][k] == 0:
+                            gridA.grid[j][k] = 2
+                            print(gridA.grid)
+                        elif gridA.grid[j][k] == 1:
+                            gridA.grid[j][k] = 3
+                            print(gridA.grid)
+                        turn = 1
 
+                   # print ("turn = %s"%(turn))
                     if cmpt_touche >= 17:
                         win = True
+                        fin = True
                     pygame.display.update()
                     # permet à l'utilisateur de quitter le jeu --> retour au menu principal
                     for event in pygame.event.get():
@@ -680,6 +730,12 @@ def main_NavalBattle():
                             play = False
                             placement = False
                             menu = True
+                    #reinitialisation de la liste contenant les rectangle de la grille A et de la grille B
+                    #évite un dépassement --> index <= 100
+
+                    gridA.display(window)
+                    gridB.display(window)
+
                     while fin:
                         Bouton_replay = Button('Rejouer ?', 200, 40, (100, 600), 5)
                         Bouton_quit = Button('Fuir ?', 200, 40, (500, 600), 5)
@@ -693,28 +749,31 @@ def main_NavalBattle():
                             text1 = font.render("Bravo vous avez vaincu votre adversaire", 1, grey)
                             window.blit(text1, (50, 300))
                             text2 = font.render("plus aucun pirates ne sillonne vos eaux", 1, grey)
-                            window.blit(text2, (100, 400))
+                            window.blit(text2, (50, 400))
                         else:
                             text1 = font.render("Vous avez subi une defaite cuisante", 1, grey)
                             window.blit(text1, (50, 300))
                             text2 = font.render("mais cela n'est que partie remise", 1, grey)
-                            window.blit(text2, (100, 400))
+                            window.blit(text2, (50, 400))
 
                         Bouton_quit.draw(window)
                         Bouton_replay.draw(window)
                         if Bouton_replay.pressed == True:
                             game = False
                             play = False
-                            placement = True
+                            placement = False
+                            button1.pressed = True
                             fin = False
-                            menu = False
+                            menu = True
                         if Bouton_quit.pressed == True:
                             game = False
                             play = False
                             placement = False
                             fin = False
                             menu = True
-
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                run = False
                         pygame.display.update()
 
         #permet à l'utilisateur de quitter le jeu --> retour au menu principal
