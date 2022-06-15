@@ -709,19 +709,31 @@ def main_NavalBattle():
                 # début de la boucle du jeu après placement des navires
                 while game:
                     shoot = False
-
+                    font = pygame.font.Font(None, 50)
                     # refresh de la fenetre
                     window_refresh(window)
                     message_recu = ""
+
+                    #colors
+                    grey = (50, 50, 50)
 
                     # affichage de la grille de jeu
                     gridA.display(window)
                     gridB.display(window)
 
+                    #affichage des noms des joueurs en dessous de la grille
+                    textName1 = font.render("Vous", 1, grey)
+                    textName2 = font.render("Adversaire", 1, grey)
+
+                    window.blit(textName1, (100, 550))
+                    window.blit(textName2, (550, 550))
+
                     # mise à jour de la fenetre
                     mouseX, mouseY = pygame.mouse.get_pos()
                     # print("souris en : %s %s"%(mouseX,mouseY))
                     if turn == 1:
+                        #indique au joueur que c'est à lui de jouer
+                        textTurn = font.render("A VOUS DE JOUER", 1, grey)
                         for i in range(len(gridB.listRect)):
                             message_recu = ""
                             if gridB.listRect[i].collidepoint((mouseX, mouseY)):
@@ -744,9 +756,13 @@ def main_NavalBattle():
                                             message_recu = message_recu.split(":")
                                             print("message recu apres split :", message_recu)
                                             if message_recu[0] == "touche ":
+                                                #etat du tir affiché sur l'écran
+                                                #ici on affiche touché si le tir a atteint sa cible
+                                                textShotState = font.render("Touche", 1, grey)
                                                 gridB.grid[j][k] = 3
                                                 # print("navire touche")
                                             elif message_recu[0] == "rate ":
+                                                textShotState = font.render("Manque", 1, grey)
                                                 gridB.grid[j][k] = 2
 
                             if message_recu == "WIN":
@@ -754,7 +770,9 @@ def main_NavalBattle():
                                 win = False
                             else:
                                 x = 1
-                    elif turn == 2:
+                        window.blit(textShotState, (350, 150))
+                    if turn == 2:
+                        textTurn = font.render("AU TOUR DE L'ADVERSAIRE", 1, grey)
                         j, k, shoot, ACR = recep(sock, gridA.grid)
                         print(gridA.grid)
                         if gridA.grid[j][k] == 0 and shoot:
@@ -765,7 +783,7 @@ def main_NavalBattle():
                             print(gridA.grid)
                         if ACR:
                             turn = 1
-
+                    window.blit(textTurn, (350, 50))
                     # print ("turn = %s"%(turn))
                     if cmpt_touche >= 17:
                         win = True
@@ -788,10 +806,10 @@ def main_NavalBattle():
                         Bouton_replay = Button('Rejouer', 200, 40, (100, 600), 5)
                         Bouton_quit = Button('Back to menu', 200, 40, (500, 600), 5)
 
-                        grey = (50, 50, 50)
+
                         white = (255, 255, 255)
                         window.fill(white)
-                        font = pygame.font.Font(None, 50)
+
                         if win:
                             text1 = font.render("Bravo vous avez vaincu votre adversaire", 1, grey)
                             window.blit(text1, (50, 300))
