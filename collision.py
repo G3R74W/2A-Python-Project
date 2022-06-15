@@ -1,4 +1,5 @@
 #-*- coding:UTF-8 -*-
+#@tobias Wendl
 
 import pygame, sys, time, random, os, math
 from pygame import*

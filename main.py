@@ -1,5 +1,5 @@
 #-*- coding: UTF-8 -*-
-#@tobias_Wendl
+#@tobias Wendl
 
 import pygame, sys
 from pygame import*
