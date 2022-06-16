@@ -1,87 +1,38 @@
 # -*- coding: UTF-8 -*-
-# @tobias wendl
+#@tobias wendl
 
 import pygame
 from pygame import *
 import Button
-from Button import*
+from Button import *
 import time
 import IP_perso
 import ping3 as ping
 import socket
 
-HOST = "192.168.43.89"
+HOST = "192.168.43.18"
 PORT = 65432
 
 
 class Piece:
-    """
-    Class to build a ship
-    ...
-    Attributes
-    ----------
-    player : int
-        if 0, the ship is owned by none of the two player
-        if 1, the ship is owned by the user
-        if 2, the ship is owned by the ennemy
-    pos : tuple
-        x and y coordinates of the top left corner of the ship
-    corpse : list
-        contains all the pygame Rect objects (here those are squares) of the ship.
-        Those are representing the ship
-    listRect : list
-        Used to store the squares representing the ship
-        Basically used as the corpse of the ship
-    size : int
-        the size of the ship represents the number of squares contained in the body
-    type : str
-        represents the type of the ship
-        type can be : porte avion, croiseur, contre torpilleur, torpilleur
-        used to define the size of the ship
-    frame : bool
-        used when the player has to place his ships
-        shows if a piece has been clicked with a blue frame around it
-    collision : bool
-        used to detect if the mouse collided with the piece
-        used when the player has to place his ships
-    placed : bool
-        used to know if the ship has been placed
-        once the ship has been placed on the grid, it cannot be placed somewhere else
-    sunk : bool
-        used to know if the ship has been sunk
-        True if the ship has been sunk
-        False if not
-
-    Methods
-    -------
-    display(window):
-        displays the ship on the pygame when the user has to place his ships
-    check_click():
-        checks if a ship has been clicked when the player has to place them
-    """
 
     def __init__(self, xPos, yPos, type):
-        """
-        Constructs all the necessary attributes for the piece object
-        :param xPos: int
-        :param yPos: int
-        :param type: str
-        """
 
-        self.player = 0  # 0-> owned by none of the two players at the creation of the ship
+        self.player = 0  # 0-> n appartient a aucun joueur
         self.pos = (xPos, yPos)
-        self.corpse = []  #body of the ship
+        self.corpse = []  # corps du navire
         self.listRect = []
         self.size = 0
-        self.type = type  #defines the type of ship that's going to be built
+        self.type = type  # string qui définit le type de la piece
         self.frame = False
         self.collision = False
         self.placed = False
         self.sunk = False
 
-        # counts the number of ships of a certain type available for the player to place on his grid
+        # permet de compter le nombre de pieces d'un type donné
+        # attribut utilisé lors du placement des pieces
         self.counter = 1
-        # size is initialized depending on the type of the ship
+        # on init la taille en fct du type
         if type == "porte avion":
             self.size = 5
 
@@ -95,19 +46,15 @@ class Piece:
         elif type == "torpilleur":
             self.size = 2
 
-        # initializing the ship's body
-        # initialized to 0 in the begininning
-        # 0 represents the gray color
-        # 1 represents red  --> ship has been struck by a shot
+        # on init la liste qui sert de corps au navire
+        # on init à 0
+        # 0 représente gris
+        # 1 représente rouge --> navire touché
         for i in range(self.size):
             self.corpse.append(0)
 
     def display(self, window):
-        """
-        displays the ship on the pygame when the user has to place his ships
-        :param window: pygame window object
-        :return: None
-        """
+        """permet d'afficher les pièces"""
         font = pygame.font.SysFont("comicsans", 30, True)
         color = (135, 138, 136)
         xPos, yPos = self.pos[0], self.pos[1]
@@ -121,11 +68,7 @@ class Piece:
         window.blit(text, (self.pos[0], self.pos[1] - 50))
 
     def check_click(self, window):
-        """
-        checks if a ship has been clicked when the player has to place them
-        :param window: pygame window object
-        :return: None
-        """
+        """permet de tester si une piece a ete cliqué"""
         mouseX, mouseY = pygame.mouse.get_pos()
         color = (53, 16, 235)
         for i in range(len(self.listRect)):
@@ -143,38 +86,7 @@ class Piece:
 
 
 class Grid:
-    """
-    Class build a grid
-    ...
-    Attributes
-    ----------
-    size : tuple
-        grid is square with x times y dimension
-    grid : list
-        represents the grid of the player and the shots he's done
-        containing 0, 1, 2 and 3
-        0 -> empty cell
-        1 -> cell containing a ship
-        2 -> empty cell struck by a shot
-        3 -> cell containing a ship that has been struck by a shot
-    pos : tuple
-        x and y coordinates of the top left corner of each square of the grid
-    listRect : list
-        containing every pygame Rect object used to build the grid
-
-    Methods
-    -------
-    display(window):
-        displays the grid object on the pygame screen
-    placement(window, size, rotate):
-        allows the player to place his ships on the grid
-    """
     def __init__(self, xPos, yPos):
-        """
-        Constructs all the necessary attributes for the grid object
-        :param xPos: int
-        :param yPos: int
-        """
         self.size = (10, 10)
         self.grid = []
         for i in range(self.size[0]):
@@ -185,20 +97,17 @@ class Grid:
         self.listRect = []
 
     def display(self, window):
-        """
-        displays the grid object on the pygame screen
-        :param window:
-        :return: tuple color of a cell
-        """
-        #listRect is empty at the beginning of the placement process
+        """affichage de la grille de jeu
+            Les 0 représentent une case vide
+            Les 1 représente une case avec un navire
+            Les 2 représentent une case vide touchée
+            Les 3 representent une case avec un navire touchée"""
         self.listRect = []
         q = 0
         yPos = self.pos[1]
-        #we go through every cell of the grid
         for j in range(self.size[0]):
             xPos = self.pos[0]
             for k in range(self.size[1]):
-                #using a switcher to determine the color of a cell
                 switcher = {
                     0: (255, 255, 255),
                     1: (135, 138, 136),
@@ -211,56 +120,48 @@ class Grid:
                 xPos += 31
                 q += 1
             yPos += 31
-        #returning the color of a cell
         return color
 
     def placement(self, window, size, rotate):
-        """
-        allows the player to place his ships on the grid
-        :param window: pygame window object
-        :param size: int
-        :param rotate: bool
-        :return: placed -> True if the ship has been placed, False if not
-        :rtype: bool
-        """
+        """permet de placer les navires sur la grille"""
         mouseX, mouseY = pygame.mouse.get_pos()
         placed = False
         for i in range(len(self.listRect)):
             if self.listRect[i].collidepoint((mouseX, mouseY)):
-                #using the variable m to save the value of i
+                # on sauvegarde la variable i en utilisant une variable m
                 m = i
-                #if the player wants to place his ship horizontaly
-                # selector --> horizontal
+                # si l'on souhaite placer les navires à l'horizontale
+                # -->sélecteur à l'horizontale
                 if rotate == False:
-                    # loop used to display the selector on the grid
+                    # boucle for qui permet d'afficher un 'sélecteur' sur la grille
                     for j in range(size):
-                        #checking if the selected area is on the grid
+                        # on verfifie que la zone sélectionnée se situe à l'intérieur de la grille
                         if m < len(self.listRect):
                             pygame.draw.rect(window, (59, 199, 44), self.listRect[m], 2)
                             m += 1
-                        #placing the ship on the last available cells of the grid if the user tries to place
-                        #his ships outside of the grid
+                        # si on se situe en dehors de la grille --> affichage de la pièce sur les dernières cases dispo
                         else:
                             pygame.draw.rect(window, (59, 199, 44), self.listRect[m - size], 2)
                             m -= size - 1
-                #if the player wants to place his ship verticaly
-                # selector --> vertical
+                # si l'on souhaite placer les navires à la verticale
+                # sélecteur à la verticale
                 if rotate:
-                    #display the selector on the grid
+                    # boucle for qui permet d'afficher un 'sélecteur' sur la grille
                     for j in range(size):
-                        #checking if the selected area is on the grid
+                        # on vérifie que la zone sélectionnée se situe à l'intérieur de la grille
                         if m + self.size[0] < len(self.listRect) + self.size[0]:
                             pygame.draw.rect(window, (59, 199, 44), self.listRect[m], 2)
                             m += self.size[0]
-                        #placing the ship on the last available cells of the grid if the user tries to place
-                        #his ships outside of the grid
+                        # si on se situe en dehors de la grille --> affichage de la pièce sur les dernières cases dispo
                         else:
                             pygame.draw.rect(window, (59, 199, 44), self.listRect[m - self.size[0] * size], 2)
                             m -= self.size[0] * size - self.size[0]
 
                 for event in pygame.event.get():
                     if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                        #the next 'for' loop changes the color of all the selected cells --> ship placed
+                        # la boucle for suivante permet de changer la couleur de tous les rect sélectionnés
+                        # ex: torpilleur sélectionné --> 2 cases coloriées
+                        # cad. placer les navires
                         for l in range(size):
                             # on vérifie que la zone sélectionnée se situe dans la grille
                             # il faut également vérifier l'orientation du navire
@@ -311,37 +212,21 @@ class Grid:
 
 
 def window_refresh(window):
-    """
-    Refreshes the pygame window
-    :param window: pygame window object
-    :return: None
-    """
-    #loading of the background picture
     bg_image = pygame.image.load('img/blue.jpg')
     window.blit(bg_image, (0, 0))
 
 
 def window_init():
-    """
-    initializing the pygame window
-    :return: pygame window object
-    """
     # initialisation pygame
     pygame.init()
-    #setting the size of the window
     window = pygame.display.set_mode((800, 800))
-    #setting the caption
     pygame.display.set_caption("THE NAVAL BATTLE")
-    #using the refresh_window method
     window_refresh(window)
     return window
 
 
 def Button_creation():
-    """Creates the buttons objects later displayed on the screen
-    :return: button object
-    :rtype: object
-    """
+    """creation des bouttons"""
     button1 = Button('Play', 200, 40, (290, 400), 5)
     button2 = Button('How to play', 200, 40, (290, 470), 5)
     button3 = Button('Back to menu', 200, 40, (290, 540), 5)
@@ -351,35 +236,17 @@ def Button_creation():
 
 
 def grid_creation(xPos, yPos):
-    """
-    Creates a grid object
-    :param xPos: int
-    :param yPos: int
-    :return: grid object
-    """
+    """creation de la grille"""
     grid = Grid(xPos, yPos)
     return grid
 
 
 def piece_creation(xPos, yPos, type):
-    """
-    Creates a piece object
-    :param xPos: int
-    :param yPos: int
-    :param type: str
-    :return: piece object
-    """
     piece = Piece(xPos, yPos, type)
     return piece
 
 
 def connection(min=0, max=255):
-    """
-    fonction qui recupere l'IP de l'utilisateur et regarde la liste des machines connecte dans une certaine plage
-    :param min: borne inferieur de la plage
-    :param max: borne superieur de la plage
-    :return: liste des machines connecte sur le reseau dans le plage choisi
-    """
     IP = IP_perso.get_ip()
     print("mon IP est : %s" % (IP))
     list_IP = IP_perso.list_host(IP, min, max)
@@ -388,11 +255,6 @@ def connection(min=0, max=255):
 
 
 def clientfct(list_host):
-    """
-    fonction permettant d'etablie une connection avec le serveur
-    :param list_host: liste des machines connecte sur le reseau
-    :return: la socket d'ecoute et si la connection a réussi ou non
-    """
     host_connect = ""
     conversation = True
     Connection = False
@@ -436,16 +298,38 @@ def clientfct(list_host):
         # si on trouve aucun serveur alors on devient un serveur
         print("server_echo")
         # server_echo()
+    """
+    else:
+        # message_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # newdestination = (host_connect, 65432)
+        try:
+            # on demande a l'utilisateur d'ecrire un message 
+            # puis on l'encode en binaire
+            # puis en l'envoie et on attend la reponse du serveur
+            # qu'on decode et qu'on ecrit
+            while conversation:
+                message = input("tapez votre message\n")
+                if message == "stop":
+                    conversation = False
+                try:
+                    print("------Envoie du message-------")
+                    # message_socket.sendall(message.encode("utf-8"))
+                    test_socket.sendall(message.encode("utf-8"))
+                    data = test_socket.recv(1024).decode("utf-8")
+                    print("message recu : %s" % (data))
+                    if data == "stop":
+                        conversation = False
+                        test_socket.sendall("stop".encode("utf-8"))
+                except Exception as e:
+                    print("erreur dans l'envoie du message \n -> erreur : %s" % (e))
+                    conversation = False
+        except Exception as e:
+            print("erreur de connection avec l'hote \n -> erreur : %s" % (e))
+        """
     return test_socket, Connection
 
 
 def message(socket, message):
-    """
-    fonction qui en voie et recoie un message
-    :param socket: socket d'ecoute
-    :param message: message a envoie
-    :return: message recu
-    """
     print("socket = %s" % (socket))
     print("ENTREE DANS MESSAGE")
 
@@ -458,34 +342,27 @@ def message(socket, message):
     return recu
 
 
+def victoire(socket):
+    message(socket, "WIN:10")
+
+
 def recep(socket, listRect):
-    """
-    cette fonction gere la reception des messages
-    :param socket: socket d'écoute
-    :param listRect: liste des rectangle d'une grille
-    :return: j et k indice du tableau ,tir boolean revoyant si message un tir, ACR l'accuse de reception du message.
-    """
-    recu = socket.recv(1024).decode("utf-8")
+    binrecu = socket.recv(1024).decode("utf-8")
     ACR = False
-    print("ENTREE DANS RECEPTION \n message recu = %s" % (recu))
-    if not recu:
+    print("ENTREE DANS RECEPTION \n message recu = %s" % (binrecu))
+    if not binrecu:
         j = 0
         k = 0
         tir = False
-    elif recu == "Bien recu":
+    elif binrecu == "Bien recu":
         j = 1
         k = 1
         tir = False
         ACR = True
-    elif recu == "WIN":
-        j = 2
-        k = 2
-        tir = True
-        ACR = True
     else:
         tir = True
-        print("reception =  %s" % (recu))
-        msg = recu.split(":")
+        print("reception =  %s" % (binrecu))
+        msg = binrecu.split(":")
         i = int(msg[1])
         j = i // 10
         k = i % 10
@@ -501,14 +378,43 @@ def recep(socket, listRect):
     return j, k, tir, ACR
 
 
+def server():
+    print(f"server_echo: BEGIN")
+    bLoop1 = True
+    client = False
+    while bLoop1:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            prise = socket.create_server((HOST, PORT))  # on ouvre le port de communication special
+            print(f"server_echo: (listen)")
+            s.listen()  # on attend que qqln ce connecte
+            conn, addr = s.accept()  # on accept ca connection
+            # conn = nouvelle socket pouvant etre utilise pour envoye et recevoir des message
+            # addr = liens avec la socket de l'autre cote
+            with prise:
+                bLoop1 = False
+                # on verifie que c'est bien notre application
+                data = prise.recv(1024)
+                sData = data.decode('utf-8')
+                print(f"server_echo: Received {sData}")
+                if sData == 'Test-Serveur':
+                    verif = "ok"
+                    prise.sendall(verif.encode("utf-8"))
+                    print(f"server_echo: Connected by")
+                    # on attend les message de l'utilisateur on le decode, l'ecrit
+                    # l'interpret, et on le revoie
+                    client = True
+                else:
+                    refus = "Le message d'autentification n'est pas le bon"
+                    print(refus)
+                    prise.sendall(refus.encode("utf-8"))
+                print(f"server_echo: loop ended")
+            print(f"server_echo: connexion closed")
+        print(f"server_echo: ...")
+    print(f"server_echo: END")
+    return prise, client
+
+
 def tir(sock, i, cmpt_touche):
-    """
-    cette fonction permet de faire un tir
-    :param sock: socket de comunication
-    :param i: indice du rectangle dans la liste des rectangle
-    :param cmpt_touche: nombre de navire touche pour le moment
-    :return:le message recu et le nouveau nombre de navire touche
-    """
     recu = message(sock, "tir : %s" % (i))
     print("--- envoie tir en %s " % (i))
     if recu == "touche : %i" % (i):
@@ -525,10 +431,7 @@ def tir(sock, i, cmpt_touche):
 
 
 def main_NavalBattle():
-    """
-    Main function of the naval battle game
-    :return: None
-    """
+    """fonction main du jeu naval battle"""
 
     client = False
     Connect = False
@@ -577,7 +480,6 @@ def main_NavalBattle():
         # début de la boucle menu
         while menu:
             cmpt_touche = 0
-            cmpt_ally_touche = 0
             message_recu = ""
             # refresh de la fenetre à chaque début de boucle
             window_refresh(window)
@@ -811,16 +713,17 @@ def main_NavalBattle():
                     # refresh de la fenetre
                     window_refresh(window)
                     message_recu = ""
+
+                    #colors
                     grey = (50, 50, 50)
 
                     # affichage de la grille de jeu
                     gridA.display(window)
                     gridB.display(window)
 
-                    # affichage des noms des joueurs en dessous de la grille
+                    #affichage des noms des joueurs en dessous de la grille
                     textName1 = font.render("Vous", 1, grey)
                     textName2 = font.render("Adversaire", 1, grey)
-                    textShotState = font.render(" ", 1, grey)
 
                     window.blit(textName1, (100, 550))
                     window.blit(textName2, (550, 550))
@@ -829,9 +732,8 @@ def main_NavalBattle():
                     mouseX, mouseY = pygame.mouse.get_pos()
                     # print("souris en : %s %s"%(mouseX,mouseY))
                     if turn == 1:
-                        # indique au joueur que c'est à lui de jouer
-                        textShotState = font.render("A VOUS DE JOUER", 1, grey)
-                        window.blit(textShotState, (350, 150))
+                        #indique au joueur que c'est à lui de jouer
+                        textTurn = font.render("A VOUS DE JOUER", 1, grey)
                         for i in range(len(gridB.listRect)):
                             message_recu = ""
                             if gridB.listRect[i].collidepoint((mouseX, mouseY)):
@@ -854,8 +756,8 @@ def main_NavalBattle():
                                             message_recu = message_recu.split(":")
                                             print("message recu apres split :", message_recu)
                                             if message_recu[0] == "touche ":
-                                                # etat du tir affiché sur l'écran
-                                                # ici on affiche touché si le tir a atteint sa cible
+                                                #etat du tir affiché sur l'écran
+                                                #ici on affiche touché si le tir a atteint sa cible
                                                 textShotState = font.render("Touche", 1, grey)
                                                 gridB.grid[j][k] = 3
                                                 # print("navire touche")
@@ -863,12 +765,14 @@ def main_NavalBattle():
                                                 textShotState = font.render("Manque", 1, grey)
                                                 gridB.grid[j][k] = 2
 
-                                            window_refresh(window)
-                                            gridA.display(window)
-                                            gridB.display(window)
-                                            window.blit(textShotState, (350, 150))
-                                            pygame.display.update()
-                    elif turn == 2:
+                            if message_recu == "WIN":
+                                fin = True
+                                win = False
+                            else:
+                                x = 1
+                        window.blit(textShotState, (350, 150))
+                    if turn == 2:
+                        textTurn = font.render("AU TOUR DE L'ADVERSAIRE", 1, grey)
                         j, k, shoot, ACR = recep(sock, gridA.grid)
                         print(gridA.grid)
                         if gridA.grid[j][k] == 0 and shoot:
@@ -877,20 +781,14 @@ def main_NavalBattle():
                         elif gridA.grid[j][k] == 1 and shoot:
                             gridA.grid[j][k] = 3
                             print(gridA.grid)
-                            cmpt_ally_touche += 1
                         if ACR:
                             turn = 1
-
+                    window.blit(textTurn, (350, 50))
                     # print ("turn = %s"%(turn))
                     if cmpt_touche >= 17:
                         win = True
                         fin = True
-                    if cmpt_ally_touche >= 17:
-                        win = False
-                        fin = True
-
                     pygame.display.update()
-
                     # permet à l'utilisateur de quitter le jeu --> retour au menu principal
                     for event in pygame.event.get():
                         if event.type == pygame.QUIT:
@@ -905,13 +803,13 @@ def main_NavalBattle():
                     gridB.display(window)
 
                     while fin:
-                        Bouton_replay = Button('Rejouer ?', 200, 40, (100, 600), 5)
-                        Bouton_quit = Button('Fuir ?', 200, 40, (500, 600), 5)
+                        Bouton_replay = Button('Rejouer', 200, 40, (100, 600), 5)
+                        Bouton_quit = Button('Back to menu', 200, 40, (500, 600), 5)
 
-                        grey = (50, 50, 50)
+
                         white = (255, 255, 255)
                         window.fill(white)
-                        font = pygame.font.Font(None, 50)
+
                         if win:
                             text1 = font.render("Bravo vous avez vaincu votre adversaire", 1, grey)
                             window.blit(text1, (50, 300))
@@ -953,6 +851,4 @@ def main_NavalBattle():
 
 
 if __name__ == '__main__':
-    print(Grid.__doc__)
-    print(Piece.__doc__)
     main_NavalBattle()
