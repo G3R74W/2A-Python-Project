@@ -107,7 +107,8 @@ def message_display(window, content, counter):
                 car_counter = 0
                 height += 50
 
-        pygame.draw.rect(window, msgColor, (xPos - 10, yPos - 5, width, height), border_radius=4)
+        if message != "\n" and message != "":
+            pygame.draw.rect(window, msgColor, (xPos - 10, yPos - 5, width, height), border_radius=4)
         text = font.render(message, 1, (0, 0, 0))
         window.blit(text, (xPos, yPos))
 
@@ -138,7 +139,6 @@ def createServer(host, port):
     except Exception as e:
         print("createServer failed (%s)" % (repr(e)))
     return newSocket
-
 
 # fonction qui gere la socket d'ecoute
 # boucle limitee...
@@ -178,7 +178,6 @@ def client2():
     return connexion
 
 
-# objet de communication bi-directionnel
 class Communicator():
     # methode: constructeur
     def __init__(self, connexion, name='Communicator'):
@@ -207,13 +206,13 @@ class Communicator():
             # on cree un thread pour l'ecoute
             print("%20s | start, creating listening thread" % (self.name))
             listenThread = threading.Thread(target=Communicator.listenLoop,
-                                            args=(self, self.reactionFonction,),
+                                            args=(self, self.reactionFonction, self.reactionFonctionObject,),
                                             daemon=True)
             listenThread.name = self.name + '_listeningThread'
             # on cree un thread pour l'entree de message
             print("%20s | start, creating message thread" % (self.name))
             messageThread = threading.Thread(target=Communicator.messageLoop,
-                                             args=(self, self.entreeFonction,), daemon=True)
+                                             args=(self, self.entreeFonction, self.entreeFonctionObject,), daemon=True)
             messageThread.name = self.name + '_messageThread'
             # go !
             self.running = True
@@ -232,9 +231,8 @@ class Communicator():
             try:
                 if self.connexion and self.connexion.fileno() >= 0:
                     print("%20s | sendData, sending (%s)" % (self.name, repr(data)))
-                    print("data : %s" % (data))
                     # self.sentData = data
-                    self.connexion.sendall(data.encode("utf-8"))
+                    self.connexion.sendall(data)
                 else:
                     print("%20s | sendData, connexion lost, stop" % (self.name))
                     self.running = False
@@ -248,13 +246,13 @@ class Communicator():
             print("%20s | sendData (NOT running)" % (self.name))
 
     # boucle sur fonction d'entree de messages et d'envoi
-    def messageLoop(self, function):
+    def messageLoop(self, function, functionObject):
         print("| %20s    messageLoop(%s)" % (threading.current_thread().name, self.name))
         # boucle eternelle (tant que le communicator tourne)
         while self.running:
             print("| %20s    messageLoop(%s) waiting..." % (threading.current_thread().name, self.name))
             # data = input().encode('utf-8')
-            data = function()
+            data = function(functionObject)
             print("> %s < INPUT" % repr(data)) if data else None
             # message non vide...
             if data:
@@ -264,7 +262,7 @@ class Communicator():
                 self.sendData(data)
 
     # fonction de reaction a un message recu via un communicator... socket echo
-    def listenLoop(self, function):
+    def listenLoop(self, function, functionObject):
         print("| %20s    listenLoop(%s)" % (threading.current_thread().name, self.name))
         # boucle eternelle (tant que le communicator tourne)
         while self.running:
@@ -280,15 +278,18 @@ class Communicator():
                     self.sendData(b'stop')
                     self.running = False
                 elif function:
-                    function(data)
+                    function(functionObject, data)
 
 
-def entree():
+
+def entree(objet):
     AllMessage = open('messages.txt', 'r')
     msgList = AllMessage.readlines()
     # longueur de la liste
     nbMsg = len(msgList)
-    message = msgList[nbMsg - 1]
+    message = str(msgList[nbMsg - 1])
+    #message = "message de debug n°2"
+    print("message : %s"%(message))
     AllMessage.close()
     print("ENTREE DANS LA FONCTION")
     send = False
@@ -315,18 +316,18 @@ def entree():
         lastNumber.close()
 
     if send:
-        print(message)
-        return message
+        print("envoie du message : %s"%(message))
+        return message.encode("utf-8")
     else:
         print("envoie vide normalement")
-        return ""
+        return None
 
-
-def reaction(data):
-    # compteur de caractères
+def reaction(objet,data):
+    print("j'entre dans la reaction")
     car_counter = 0
-    if data != '':
-        print("REACTION data recu = %s"%(data))
+    data = data.decode("utf-8")
+    if data != "\n":
+        print("REACTION data recu = :%s:"%(data))
         AllMessage = open('messages.txt', 'a')
         AllMessage.write("1")
         for k in range(len(data)):
@@ -336,6 +337,8 @@ def reaction(data):
                 AllMessage.write("\n" + '1')
                 car_counter = 0
         AllMessage.write('\n')
+    else:
+        print("NOUS SOMMES DANS LE ELSE")
 
 
 def ip_main():
@@ -382,15 +385,25 @@ def main_chat():
 
     # colors
     white = (255, 255, 255)
-    print("CLIENT")
-    connexion = client2()
-    name = 'client'
 
-    if not connexion:
+    print("__MAIN__")
+    tArgs = sys.argv[1:]
+    connexion = None
+    communicator = None
+    name = ''
+    for ia, sa in enumerate(tArgs):
+        print("    %-4d : %s" % (ia, sa))
+
+    if 's' in sys.argv:
         # > python sock03.py s
         print("SERVER")
         connexion = server2()
         name = 'server'
+    else:
+        # > python sock03.py
+        print("CLIENT")
+        connexion = client2()
+        name = 'client'
 
     if connexion:
         print("__MAIN__, create communicator...")
