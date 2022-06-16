@@ -1,10 +1,9 @@
 #-*- coding: UTF-8 -*-
 #@tobias wendl
 
-import pygame
 from pygame import*
-import Button
-from Button import*
+from Protocole_reseau import Button
+from Protocole_reseau.Button import*
 import time
 import IP_perso
 import ping3 as ping
