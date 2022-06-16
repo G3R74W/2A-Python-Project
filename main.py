@@ -11,8 +11,8 @@ import NavalBattle2
 from NavalBattle2 import*
 import SpeedJump
 from SpeedJump import*
-import chat
-from chat import*
+import chat2
+from chat2 import*
 import time
 
 def window_init():
