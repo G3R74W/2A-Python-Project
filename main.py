@@ -18,6 +18,7 @@ import time
 def window_init():
 	"""
 	initializes the pygame window
+	:return: None
 	"""
 	#pygame window initializing
 	pygame.init()
@@ -27,6 +28,7 @@ def window_init():
 def window_creation():
 	"""
 	After the pygame window has been initialized, the background images of the main menu are being blit on the window
+	:return: None
 	"""
 	#loading and setting the background image
 	bg_img = pygame.image.load('img/arcade.jpg')
@@ -70,6 +72,7 @@ def mouse_collision(object):
 def main():
 	"""
 	main function of the programm. Gives access to the main menu.
+	:return: None
 	"""
 	#variables
 	font = pygame.font.Font(None, 70)
