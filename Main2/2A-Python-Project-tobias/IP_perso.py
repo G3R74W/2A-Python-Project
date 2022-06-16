@@ -2,7 +2,6 @@ import socket
 import ping3 as ping
 
 
-
 def get_ip():
     """
     fonction qui permet d'avoir sa propore IP au sein d'un réseau

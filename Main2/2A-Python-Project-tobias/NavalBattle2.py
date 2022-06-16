@@ -1,9 +1,10 @@
 # -*- coding: UTF-8 -*-
 # @tobias wendl
 
+import pygame
 from pygame import *
-from Protocole_reseau import Button
-from Protocole_reseau.Button import *
+import Button
+from Button import*
 import time
 import IP_perso
 import ping3 as ping
@@ -14,24 +15,72 @@ PORT = 65432
 
 
 class Piece:
+    """
+    Class to build a ship
+    ...
+    Attributes
+    ----------
+    player : int
+        if 0, the ship is owned by none of the two player
+        if 1, the ship is owned by the user
+        if 2, the ship is owned by the ennemy
+    pos : tuple
+        x and y coordinates of the top left corner of the ship
+    corpse : list
+        contains all the pygame Rect objects (here those are squares) of the ship.
+        Those are representing the ship
+    listRect : list
+        Used to store the squares representing the ship
+        Basically used as the corpse of the ship
+    size : int
+        the size of the ship represents the number of squares contained in the body
+    type : str
+        represents the type of the ship
+        type can be : porte avion, croiseur, contre torpilleur, torpilleur
+        used to define the size of the ship
+    frame : bool
+        used when the player has to place his ships
+        shows if a piece has been clicked with a blue frame around it
+    collision : bool
+        used to detect if the mouse collided with the piece
+        used when the player has to place his ships
+    placed : bool
+        used to know if the ship has been placed
+        once the ship has been placed on the grid, it cannot be placed somewhere else
+    sunk : bool
+        used to know if the ship has been sunk
+        True if the ship has been sunk
+        False if not
+    Methods
+    -------
+    display(window):
+        displays the ship on the pygame when the user has to place his ships
+    check_click():
+        checks if a ship has been clicked when the player has to place them
+    """
 
     def __init__(self, xPos, yPos, type):
+        """
+        Constructs all the necessary attributes for the piece object
+        :param xPos: int
+        :param yPos: int
+        :param type: str
+        """
 
-        self.player = 0  # 0-> n appartient a aucun joueur
+        self.player = 0  # 0-> owned by none of the two players at the creation of the ship
         self.pos = (xPos, yPos)
-        self.corpse = []  # corps du navire
+        self.corpse = []  #body of the ship
         self.listRect = []
         self.size = 0
-        self.type = type  # string qui définit le type de la piece
+        self.type = type  #defines the type of ship that's going to be built
         self.frame = False
         self.collision = False
         self.placed = False
         self.sunk = False
 
-        # permet de compter le nombre de pieces d'un type donné
-        # attribut utilisé lors du placement des pieces
+        # counts the number of ships of a certain type available for the player to place on his grid
         self.counter = 1
-        # on init la taille en fct du type
+        # size is initialized depending on the type of the ship
         if type == "porte avion":
             self.size = 5
 
@@ -45,15 +94,19 @@ class Piece:
         elif type == "torpilleur":
             self.size = 2
 
-        # on init la liste qui sert de corps au navire
-        # on init à 0
-        # 0 représente gris
-        # 1 représente rouge --> navire touché
+        # initializing the ship's body
+        # initialized to 0 in the begininning
+        # 0 represents the gray color
+        # 1 represents red  --> ship has been struck by a shot
         for i in range(self.size):
             self.corpse.append(0)
 
     def display(self, window):
-        """permet d'afficher les pièces"""
+        """
+        displays the ship on the pygame when the user has to place his ships
+        :param window: pygame window object
+        :return: None
+        """
         font = pygame.font.SysFont("comicsans", 30, True)
         color = (135, 138, 136)
         xPos, yPos = self.pos[0], self.pos[1]
@@ -67,7 +120,11 @@ class Piece:
         window.blit(text, (self.pos[0], self.pos[1] - 50))
 
     def check_click(self, window):
-        """permet de tester si une piece a ete cliqué"""
+        """
+        checks if a ship has been clicked when the player has to place them
+        :param window: pygame window object
+        :return: None
+        """
         mouseX, mouseY = pygame.mouse.get_pos()
         color = (53, 16, 235)
         for i in range(len(self.listRect)):
@@ -85,7 +142,37 @@ class Piece:
 
 
 class Grid:
+    """
+    Class build a grid
+    ...
+    Attributes
+    ----------
+    size : tuple
+        grid is square with x times y dimension
+    grid : list
+        represents the grid of the player and the shots he's done
+        containing 0, 1, 2 and 3
+        0 -> empty cell
+        1 -> cell containing a ship
+        2 -> empty cell struck by a shot
+        3 -> cell containing a ship that has been struck by a shot
+    pos : tuple
+        x and y coordinates of the top left corner of each square of the grid
+    listRect : list
+        containing every pygame Rect object used to build the grid
+    Methods
+    -------
+    display(window):
+        displays the grid object on the pygame screen
+    placement(window, size, rotate):
+        allows the player to place his ships on the grid
+    """
     def __init__(self, xPos, yPos):
+        """
+        Constructs all the necessary attributes for the grid object
+        :param xPos: int
+        :param yPos: int
+        """
         self.size = (10, 10)
         self.grid = []
         for i in range(self.size[0]):
@@ -96,17 +183,20 @@ class Grid:
         self.listRect = []
 
     def display(self, window):
-        """affichage de la grille de jeu
-            Les 0 représentent une case vide
-            Les 1 représente une case avec un navire
-            Les 2 représentent une case vide touchée
-            Les 3 representent une case avec un navire touchée"""
+        """
+        displays the grid object on the pygame screen
+        :param window:
+        :return: tuple color of a cell
+        """
+        #listRect is empty at the beginning of the placement process
         self.listRect = []
         q = 0
         yPos = self.pos[1]
+        #we go through every cell of the grid
         for j in range(self.size[0]):
             xPos = self.pos[0]
             for k in range(self.size[1]):
+                #using a switcher to determine the color of a cell
                 switcher = {
                     0: (255, 255, 255),
                     1: (135, 138, 136),
@@ -119,48 +209,56 @@ class Grid:
                 xPos += 31
                 q += 1
             yPos += 31
+        #returning the color of a cell
         return color
 
     def placement(self, window, size, rotate):
-        """permet de placer les navires sur la grille"""
+        """
+        allows the player to place his ships on the grid
+        :param window: pygame window object
+        :param size: int
+        :param rotate: bool
+        :return: placed -> True if the ship has been placed, False if not
+        :rtype: bool
+        """
         mouseX, mouseY = pygame.mouse.get_pos()
         placed = False
         for i in range(len(self.listRect)):
             if self.listRect[i].collidepoint((mouseX, mouseY)):
-                # on sauvegarde la variable i en utilisant une variable m
+                #using the variable m to save the value of i
                 m = i
-                # si l'on souhaite placer les navires à l'horizontale
-                # -->sélecteur à l'horizontale
+                #if the player wants to place his ship horizontaly
+                # selector --> horizontal
                 if rotate == False:
-                    # boucle for qui permet d'afficher un 'sélecteur' sur la grille
+                    # loop used to display the selector on the grid
                     for j in range(size):
-                        # on verfifie que la zone sélectionnée se situe à l'intérieur de la grille
+                        #checking if the selected area is on the grid
                         if m < len(self.listRect):
                             pygame.draw.rect(window, (59, 199, 44), self.listRect[m], 2)
                             m += 1
-                        # si on se situe en dehors de la grille --> affichage de la pièce sur les dernières cases dispo
+                        #placing the ship on the last available cells of the grid if the user tries to place
+                        #his ships outside of the grid
                         else:
                             pygame.draw.rect(window, (59, 199, 44), self.listRect[m - size], 2)
                             m -= size - 1
-                # si l'on souhaite placer les navires à la verticale
-                # sélecteur à la verticale
+                #if the player wants to place his ship verticaly
+                # selector --> vertical
                 if rotate:
-                    # boucle for qui permet d'afficher un 'sélecteur' sur la grille
+                    #display the selector on the grid
                     for j in range(size):
-                        # on vérifie que la zone sélectionnée se situe à l'intérieur de la grille
+                        #checking if the selected area is on the grid
                         if m + self.size[0] < len(self.listRect) + self.size[0]:
                             pygame.draw.rect(window, (59, 199, 44), self.listRect[m], 2)
                             m += self.size[0]
-                        # si on se situe en dehors de la grille --> affichage de la pièce sur les dernières cases dispo
+                        #placing the ship on the last available cells of the grid if the user tries to place
+                        #his ships outside of the grid
                         else:
                             pygame.draw.rect(window, (59, 199, 44), self.listRect[m - self.size[0] * size], 2)
                             m -= self.size[0] * size - self.size[0]
 
                 for event in pygame.event.get():
                     if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                        # la boucle for suivante permet de changer la couleur de tous les rect sélectionnés
-                        # ex: torpilleur sélectionné --> 2 cases coloriées
-                        # cad. placer les navires
+                        #the next 'for' loop changes the color of all the selected cells --> ship placed
                         for l in range(size):
                             # on vérifie que la zone sélectionnée se situe dans la grille
                             # il faut également vérifier l'orientation du navire
@@ -211,21 +309,37 @@ class Grid:
 
 
 def window_refresh(window):
+    """
+    Refreshes the pygame window
+    :param window: pygame window object
+    :return: None
+    """
+    #loading of the background picture
     bg_image = pygame.image.load('img/blue.jpg')
     window.blit(bg_image, (0, 0))
 
 
 def window_init():
+    """
+    initializing the pygame window
+    :return: pygame window object
+    """
     # initialisation pygame
     pygame.init()
+    #setting the size of the window
     window = pygame.display.set_mode((800, 800))
+    #setting the caption
     pygame.display.set_caption("THE NAVAL BATTLE")
+    #using the refresh_window method
     window_refresh(window)
     return window
 
 
 def Button_creation():
-    """creation des bouttons"""
+    """Creates the buttons objects later displayed on the screen
+    :return: button object
+    :rtype: object
+    """
     button1 = Button('Play', 200, 40, (290, 400), 5)
     button2 = Button('How to play', 200, 40, (290, 470), 5)
     button3 = Button('Back to menu', 200, 40, (290, 540), 5)
@@ -235,12 +349,24 @@ def Button_creation():
 
 
 def grid_creation(xPos, yPos):
-    """creation de la grille"""
+    """
+    Creates a grid object
+    :param xPos: int
+    :param yPos: int
+    :return: grid object
+    """
     grid = Grid(xPos, yPos)
     return grid
 
 
 def piece_creation(xPos, yPos, type):
+    """
+    Creates a piece object
+    :param xPos: int
+    :param yPos: int
+    :param type: str
+    :return: piece object
+    """
     piece = Piece(xPos, yPos, type)
     return piece
 
@@ -397,7 +523,10 @@ def tir(sock, i, cmpt_touche):
 
 
 def main_NavalBattle():
-    """fonction main du jeu naval battle"""
+    """
+    Main function of the naval battle game
+    :return: None
+    """
 
     client = False
     Connect = False
@@ -497,10 +626,6 @@ def main_NavalBattle():
             # Connect = True
             # sock = 42
             turn = 2
-            list_IP = connection(15,20)
-            socketsock, Connect = clientfct(list_IP)
-            #debug_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            #test_connection = debug_socket.connect_ex((HOST, PORT))
             # mettre un reset de la grille ici
             # creation des grilles
             # gridA --> grille de l'utilisateur
@@ -514,7 +639,11 @@ def main_NavalBattle():
             croiseur = piece_creation(400, 400, 'croiseur')
             porte_avion = piece_creation(400, 500, 'porte avion')
 
-            #if test_connection == 0:
+            list_IP = connection(15, 20)
+            socketsock, Connect = clientfct(list_IP)
+            # debug_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # test_connection = debug_socket.connect_ex((HOST, PORT))
+            # if test_connection == 0:
             #    print("Test envoie du message de verification d'application")
             #    debug_socket.sendall("Test-Serveur".encode("utf-8"))
             #    binverif = debug_socket.recv(1024).decode("utf-8")
@@ -822,4 +951,6 @@ def main_NavalBattle():
 
 
 if __name__ == '__main__':
+    print(Grid.__doc__)
+    print(Piece.__doc__)
     main_NavalBattle()
