@@ -115,9 +115,13 @@ def message_display(window, content, counter):
         yPos += 50
 
 
-# fonction qui cree un client avec des traces
-# sortie = socket de communication
 def createClient(host, port):
+    """
+    fonction permettant de creer une connection avec un serveur
+    :param host: IP du serveur
+    :param port: port du serveur
+    :return: la socket de communication avec le serveur
+    """
     newSocket = None
     try:
         newSocket = socket.create_connection((host, port))
@@ -128,9 +132,13 @@ def createClient(host, port):
     return newSocket
 
 
-# fonction qui cree un serveur avec des traces
-# sortie = socket d'ecoute
 def createServer(host, port):
+    """
+    fonction qui permet de creer un serveur
+    :param host: IP du serveur
+    :param port: port a ouvrir pour la communication
+    :return: une socket d'ecoute
+    """
     newSocket = None
     try:
         newSocket = socket.create_server((host, port))
@@ -140,9 +148,14 @@ def createServer(host, port):
         print("createServer failed (%s)" % (repr(e)))
     return newSocket
 
-# fonction qui gere la socket d'ecoute
-# boucle limitee...
 def serverListen(server, timeout, nIter=1):
+    """
+    fonction qui attend qu'une personne se connecte au serveur
+    :param server: socket d'ecoute du serveur
+    :param timeout: temps d'attente par itération
+    :param nIter: nombre d'iteration
+    :return: socket de communication serveur - client
+    """
     server.settimeout(timeout)
     iIter = 0
     newConnexion = None
@@ -159,8 +172,11 @@ def serverListen(server, timeout, nIter=1):
     return newConnexion
 
 
-# fonction qui cree une socket de communication (mode serveur)
 def server2():
+    """
+    fonction qui creer une connection client serveur cote serveur
+    :return: une socket de communication client serveur cote serveur
+    """
     print("server2")
     connexion = None
     ecouteServer = createServer(HOST, PORT)
@@ -172,6 +188,11 @@ def server2():
 
 # fonction qui cree une socket de communication (mode client)
 def client2():
+    """
+    fonction qui creer une connection client serveur cote client
+    :return: une socket de communication client serveur cote client
+    """
+
     print("client2")
     connexion = createClient(HOST, PORT)
     print("client2, connexion=%s" % (repr(connexion)))
@@ -179,29 +200,46 @@ def client2():
 
 
 class Communicator():
-    # methode: constructeur
     def __init__(self, connexion, name='Communicator'):
-        self.name = name  # identifiant
-        self.connexion = connexion  # socket de communication
+        """
+        fonction d'initialisation des variables pricipale
+        :param connexion: socket de communication
+        :param name: nom
+        """
+        self.name = name
+        self.connexion = connexion
         self.entreeFonction = None
         self.entreeFonctionObject = None
         self.reactionFonction = None
         self.reactionFonctionObject = None
-        self.running = False  # etat de l'objet
-        print("%20s | init, running <- %d" % (self.name, self.running))
+        self.running = False
 
-    # methode: definition de la fonction d'entree
+
     def setEntreeFonction(self, function, object):
+        """
+        fonction de definition de la fonction d'entree
+        :param function: fonction d'entre
+        :param object: objet de cette fonction
+        :return:
+        """
         self.entreeFonction = function
         self.entreeFonctionObject = object
 
-    # methode: definition de la fonction d'ecoute
     def setReactionFonction(self, function, object):
+        """
+        fonction de definition de la fonction de dortie
+        :param function: fonction d'entre
+        :param object: objet de cette fonction
+        :return:
+        """
         self.reactionFonction = function
         self.reactionFonctionObject = object
 
-    # methode: demarrage du communicator
     def startCommunicator(self):
+        """
+        fonction qui lance les threads
+        :return:
+        """
         if self.connexion:
             # on cree un thread pour l'ecoute
             print("%20s | start, creating listening thread" % (self.name))
@@ -223,8 +261,12 @@ class Communicator():
         if messageThread:
             messageThread.start()
 
-    # methode: envoi de message generique
     def sendData(self, data):
+        """
+        fonction d'envoie des donnees
+        :param data: donnees a envoyer
+        :return:
+        """
         print("%20s | sendData : running=%d" % (self.name, self.running))
         if self.running and data:
             # print("%20s | sendData (running OK)" %(self.name))
@@ -245,8 +287,13 @@ class Communicator():
         else:
             print("%20s | sendData (NOT running)" % (self.name))
 
-    # boucle sur fonction d'entree de messages et d'envoi
     def messageLoop(self, function, functionObject):
+        """
+        fonction qui boucle pour envoyer les messages
+        :param function: fonction d'entree
+        :param functionObject: objet de la fonction d'entree
+        :return:
+        """
         print("| %20s    messageLoop(%s)" % (threading.current_thread().name, self.name))
         # boucle eternelle (tant que le communicator tourne)
         while self.running:
@@ -261,8 +308,13 @@ class Communicator():
                 # envoi via la <SOCKET>
                 self.sendData(data)
 
-    # fonction de reaction a un message recu via un communicator... socket echo
     def listenLoop(self, function, functionObject):
+        """
+        fonction qui boucle pour ecouter les messages
+        :param function: fonction de sortie
+        :param functionObject: objet de la fonction de sortie
+        :return:
+        """
         print("| %20s    listenLoop(%s)" % (threading.current_thread().name, self.name))
         # boucle eternelle (tant que le communicator tourne)
         while self.running:
@@ -283,6 +335,11 @@ class Communicator():
 
 
 def entree(objet):
+    """
+    fonction d'entree permettant de recuperer les messages a envoyer
+    :param objet: objet de cette fonction
+    :return: message a envoyer code en binaire
+    """
     AllMessage = open('messages.txt', 'r')
     msgList = AllMessage.readlines()
     # longueur de la liste
@@ -323,6 +380,12 @@ def entree(objet):
         return None
 
 def reaction(objet,data):
+    """
+    fonction de sortie permettant d'afficher le message recu
+    :param objet: objet de cette fonction
+    :param data: message recu
+    :return:
+    """
     print("j'entre dans la reaction")
     car_counter = 0
     data = data.decode("utf-8")
@@ -337,40 +400,6 @@ def reaction(objet,data):
                 AllMessage.write("\n" + '1')
                 car_counter = 0
         AllMessage.write('\n')
-
-
-def ip_main():
-    print("__MAIN__")
-    tArgs = sys.argv[1:]
-    connexion = None
-    communicator = None
-    name = ''
-    for ia, sa in enumerate(tArgs):
-        print("    %-4d : %s" % (ia, sa))
-
-    if 's' in sys.argv:
-        # > python sock03.py s
-        print("SERVER")
-        connexion = server2()
-        name = 'server'
-    else:
-        # > python sock03.py
-        print("CLIENT")
-        connexion = client2()
-        name = 'client'
-
-    if connexion:
-        print("__MAIN__, create communicator...")
-        communicator = Communicator(connexion, name=name)
-        communicator.setEntreeFonction(entree, None)
-        communicator.setReactionFonction(reaction, None)
-        print("__MAIN__, starting communicator...")
-        communicator.startCommunicator()
-        print("__MAIN__, communicator started")
-        while communicator.running:
-            # print("__MAIN__, looping...")
-            time.sleep(2)
-        print("__MAIN__, communicator stopped")
 
 
 def main_chat():
