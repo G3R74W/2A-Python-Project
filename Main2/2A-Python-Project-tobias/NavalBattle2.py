@@ -497,10 +497,10 @@ def main_NavalBattle():
             # Connect = True
             # sock = 42
             turn = 2
-            # list_IP = connection(15,20)
-            # socketsock, Connect = clientfct(list_IP)
-            debug_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            test_connection = debug_socket.connect_ex((HOST, PORT))
+            list_IP = connection(15,20)
+            socketsock, Connect = clientfct(list_IP)
+            #debug_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            #test_connection = debug_socket.connect_ex((HOST, PORT))
             # mettre un reset de la grille ici
             # creation des grilles
             # gridA --> grille de l'utilisateur
@@ -514,13 +514,13 @@ def main_NavalBattle():
             croiseur = piece_creation(400, 400, 'croiseur')
             porte_avion = piece_creation(400, 500, 'porte avion')
 
-            if test_connection == 0:
-                print("Test envoie du message de verification d'application")
-                debug_socket.sendall("Test-Serveur".encode("utf-8"))
-                binverif = debug_socket.recv(1024).decode("utf-8")
-                if binverif == "ok":
-                    Connect = True
-                    sock = debug_socket
+            #if test_connection == 0:
+            #    print("Test envoie du message de verification d'application")
+            #    debug_socket.sendall("Test-Serveur".encode("utf-8"))
+            #    binverif = debug_socket.recv(1024).decode("utf-8")
+            #    if binverif == "ok":
+            #        Connect = True
+            #        sock = debug_socket
             if not Connect:
                 prise = socket.create_server((HOST, PORT))  # on ouvre le port de communication special
                 prise.listen()

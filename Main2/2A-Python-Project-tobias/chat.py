@@ -1,4 +1,7 @@
-# -*- coding: UTF-8 -*-
+#-*- coding: UTF-8 -*-
+#@Tobias Wendl
+#@Quentin Guer
+
 import pygame
 from pygame import *
 import Button
@@ -10,8 +13,9 @@ import select  # replacement for input() with timeout
 import socket  # sockets, obviously
 import sys  # command-line arguments
 import threading  # multi-threading
+import IP_perso
 
-HOST = "127.0.0.1"  # standard loopback interface address (localhost)
+HOST = "192.168.43.89"  # standard loopback interface address (localhost)
 PORT = 16861  # port to listen on (non-privileged ports are > 1023)
 
 
@@ -21,8 +25,11 @@ PORT = 16861  # port to listen on (non-privileged ports are > 1023)
 
 
 def window_init():
-    """initialisation de la fenêtre"""
-    # initialisation pygame
+    """initializing the pygame window
+    :return: pygame window
+    :rtype: object
+    """
+    #initializing the pygame window
     pygame.init()
     window = pygame.display.set_mode((800, 800))
     pygame.display.set_caption("CHAT")
@@ -31,12 +38,21 @@ def window_init():
 
 
 def window_refresh(window):
-    """permet de refresh la fenêtre"""
+    """refreshes the pygame window,
+    in this case the window is filled with a color
+    :param window: pygame window object
+    :return: None
+    """
     window.fill((50, 90, 168))
 
 
 def button_creation():
-    """creation des differents bouttons"""
+    """Creates the buttons objects later displayed on the screen
+    :return: button object
+    :rtype: object
+    """
+
+    # creating the different buttons
     button1 = Button('Back to menu', 200, 40, (290, 670), 5)
     button2 = Button('Send', 200, 40, (600, 680), 5)
     button3 = Button('^', 20, 20, (100, 670), 5)
@@ -45,15 +61,30 @@ def button_creation():
 
 
 def message_content():
-    """permet l'attribution du contenu du fichier.txt contenant l'entièreté des messages"""
+    """Opens the .txt file containing all the messages sent by the chat users
+    :return: the content of the .txt file as a list of all the message using the readlines method
+    :rtype: list
+    """
+    #opening the .txt file
     AllMessages = open('messages.txt', 'r')
+
+    #the content of the file is put in a list using the readlines method
+    #the list will contain all the messages sent by the users
     content = AllMessages.readlines()
+
+    #closing the .txt file
     AllMessages.close()
     return content
 
 
 def message_display(window, content, counter):
-    """permet d'afficher les messages précédents dans le chat"""
+    """displays the message contained in the .txt file
+    This method allows the programm to display old messages sent earlier
+    :param window: pygame window object
+    :param content: list containing the messages
+    :param counter: int
+    :return: None
+    """
     xPos = 550
     nbr_message = len(content)
     width = 230
@@ -115,20 +146,23 @@ def message_display(window, content, counter):
         yPos += 50
 
 
-def createClient(host, port):
+def createClient(host, port, list_IP):
     """
     fonction permettant de creer une connection avec un serveur
     :param host: IP du serveur
     :param port: port du serveur
+    :param list_IP: liste des IP a tester pour les clients
     :return: la socket de communication avec le serveur
     """
     newSocket = None
-    try:
-        newSocket = socket.create_connection((host, port))
-        print("createClient, created client socket")
-
-    except Exception as e:
-        print("createClient failed (%s)" % (repr(e)))
+    for IP in list_IP:
+        try:
+            print("test de la connection avec la machine : %s"%(IP))
+            newSocket = socket.create_connection((IP, port))
+            print("createClient, created client socket")
+            break
+        except Exception as e:
+            print("createClient failed (%s)" % (repr(e)))
     return newSocket
 
 
@@ -186,15 +220,15 @@ def server2():
     return connexion
 
 
-# fonction qui cree une socket de communication (mode client)
-def client2():
+def client2(list_IP):
     """
     fonction qui creer une connection client serveur cote client
+    :param list_IP: liste des IP a tester pour les clients
     :return: une socket de communication client serveur cote client
     """
 
     print("client2")
-    connexion = createClient(HOST, PORT)
+    connexion = createClient(HOST, PORT, list_IP)
     print("client2, connexion=%s" % (repr(connexion)))
     return connexion
 
@@ -401,6 +435,19 @@ def reaction(objet,data):
                 car_counter = 0
         AllMessage.write('\n')
 
+def connection(min=0, max=255):
+    """
+    fonction qui recupere l'IP de l'utilisateur et regarde la liste des machines connecte dans une certaine plage
+    :param min: borne inferieur de la plage
+    :param max: borne superieur de la plage
+    :return: liste des machines connecte sur le reseau dans le plage choisi
+    """
+    IP = IP_perso.get_ip()
+    print("mon IP est : %s" % (IP))
+    list_IP = IP_perso.list_host(IP, min, max)
+    print("la liste des hosts possible est : \n %s" % (list_IP))
+    return list_IP
+
 
 def main_chat():
     """main du chat"""
@@ -413,24 +460,18 @@ def main_chat():
     # colors
     white = (255, 255, 255)
 
-    print("__MAIN__")
-    tArgs = sys.argv[1:]
-    connexion = None
+    list_IP = connection(15,20)
+    print("liste des IP possible %s " %(list_IP))
+    connexion = client2(list_IP)
+
     communicator = None
     name = ''
-    for ia, sa in enumerate(tArgs):
-        print("    %-4d : %s" % (ia, sa))
 
-    if 's' in sys.argv:
+    if not connexion:
         # > python sock03.py s
         print("SERVER")
         connexion = server2()
         name = 'server'
-    else:
-        # > python sock03.py
-        print("CLIENT")
-        connexion = client2()
-        name = 'client'
 
     if connexion:
         print("__MAIN__, create communicator...")
