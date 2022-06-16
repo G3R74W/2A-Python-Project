@@ -4,6 +4,7 @@
 import pygame
 from pygame import *
 import Button
+from Button import*
 import time
 import IP_perso
 import ping3 as ping
@@ -952,4 +953,6 @@ def main_NavalBattle():
 
 
 if __name__ == '__main__':
+    print(Grid.__doc__)
+    print(Piece.__doc__)
     main_NavalBattle()
