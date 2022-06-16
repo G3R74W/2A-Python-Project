@@ -241,6 +241,12 @@ def piece_creation(xPos, yPos, type):
     return piece
 
 def connection(min = 0, max = 255):
+    """
+    fonction qui recupere l'IP de l'utilisateur et regarde la liste des machines connecte dans une certaine plage
+    :param min: borne inferieur de la plage
+    :param max: borne superieur de la plage
+    :return: liste des machines connecte sur le reseau dans le plage choisi
+    """
     IP = IP_perso.get_ip()
     print("mon IP est : %s"%(IP))
     list_IP = IP_perso.list_host(IP,min, max)
@@ -249,81 +255,63 @@ def connection(min = 0, max = 255):
 
 
 def clientfct(list_host):
-   host_connect = ""
-   conversation = True
-   Connection = False
-   mdp = "Test-Serveur"
-   # on teste toutes les IP de la liste pour voir lesquels existent
-   for host in list_host:
-       test = ping.ping(host)
+    """
+    fonction permettant d'etablie une connection avec le serveur
+    :param list_host: liste des machines connecte sur le reseau
+    :return: la socket d'ecoute et si la connection a réussi ou non
+    """
+    host_connect = ""
+    conversation = True
+    Connection = False
+    mdp = "Test-Serveur"
+    # on teste toutes les IP de la liste pour voir lesquels existent
+    for host in list_host:
+        test = ping.ping(host)
 
-       if test == 0:  # 0 = connection echoue
-           print("appareil : %s connection echoue" % (host))
-       else:
-           # une fois qu'on trouve un appareil connecte au reseau
-           # on test si son port de connection special est ouvert
-           print("appareil : %s connection reussi: <%s>" % (host, repr(test)))
-           test_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if test == 0:  # 0 = connection echoue
+            print("appareil : %s connection echoue" % (host))
+        else:
+            # une fois qu'on trouve un appareil connecte au reseau
+            # on test si son port de connection special est ouvert
+            print("appareil : %s connection reussi: <%s>" % (host, repr(test)))
+            test_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-           destination = (host, 65432)
-           error_connect = test_socket.connect_ex(destination)
-           
-           if error_connect == 0:
-               print("   le port : 65432 est ouvert")
-               try:
-                   # si le port est ouvert on envoie un message de verification
-                   # est on attend la reponse du serveur
-                   # si le serveur nous repond que c'est bon on arrete la boucle
-                   # et on passe en mode communication avec ce serveur
-                   print("Test envoie du message de verification d'application")
-                   test_socket.sendall(mdp.encode("utf-8"))
-                   binverif = test_socket.recv(1024)
-                   verif = binverif.decode("utf-8")
-                   print(verif)
-                   if verif == "ok":
-                       Connection = True
-                       host_connect = host
-                       break
-               except Exception as e:
-                   print("erreur dans l'envoie du message \n -> erreur : %s" % (e))
-           else:
-               print("   le port : 65432 est pas ouvert")
-   if Connection == False:
-       # si on trouve aucun serveur alors on devient un serveur
-       print("server_echo")
-       #server_echo()
-   """
-   else:
-       # message_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-       # newdestination = (host_connect, 65432)
-       try:
-           # on demande a l'utilisateur d'ecrire un message 
-           # puis on l'encode en binaire
-           # puis en l'envoie et on attend la reponse du serveur
-           # qu'on decode et qu'on ecrit
-           while conversation:
-               message = input("tapez votre message\n")
-               if message == "stop":
-                   conversation = False
-               try:
-                   print("------Envoie du message-------")
-                   # message_socket.sendall(message.encode("utf-8"))
-                   test_socket.sendall(message.encode("utf-8"))
-                   data = test_socket.recv(1024).decode("utf-8")
-                   print("message recu : %s" % (data))
-                   if data == "stop":
-                       conversation = False
-                       test_socket.sendall("stop".encode("utf-8"))
-               except Exception as e:
-                   print("erreur dans l'envoie du message \n -> erreur : %s" % (e))
-                   conversation = False
+            destination = (host, 65432)
+            error_connect = test_socket.connect_ex(destination)
 
-       except Exception as e:
-           print("erreur de connection avec l'hote \n -> erreur : %s" % (e))
-       """
-   return test_socket, Connection
+            if error_connect == 0:
+                print("   le port : 65432 est ouvert")
+                try:
+                    # si le port est ouvert on envoie un message de verification
+                    # est on attend la reponse du serveur
+                    # si le serveur nous repond que c'est bon on arrete la boucle
+                    # et on passe en mode communication avec ce serveur
+                    print("Test envoie du message de verification d'application")
+                    test_socket.sendall(mdp.encode("utf-8"))
+                    binverif = test_socket.recv(1024)
+                    verif = binverif.decode("utf-8")
+                    print(verif)
+                    if verif == "ok":
+                        Connection = True
+                        host_connect = host
+                        break
+                except Exception as e:
+                    print("erreur dans l'envoie du message \n -> erreur : %s" % (e))
+            else:
+                print("   le port : 65432 est pas ouvert")
+    if Connection == False:
+        # si on trouve aucun serveur alors on devient un serveur
+        print("server_echo")
+        #server_echo()
+    return test_socket, Connection
 
 def message(socket, message):
+    """
+    fonction qui en voie et recoie un message
+    :param socket: socket d'ecoute
+    :param message: message a envoie
+    :return: message recu
+    """
     print("socket = %s"%(socket))
     print("ENTREE DANS MESSAGE")
 
@@ -335,26 +323,35 @@ def message(socket, message):
     print("reception %s"%recu)
     return recu
 
-def victoire(socket):
-    message(socket, "WIN:10")
 
 def recep(socket,listRect):
-    binrecu = socket.recv(1024).decode("utf-8")
+    """
+    cette fonction gere la reception des messages
+    :param socket: socket d'écoute
+    :param listRect: liste des rectangle d'une grille
+    :return: j et k indice du tableau ,tir boolean revoyant si message un tir, ACR l'accuse de reception du message.
+    """
+    recu = socket.recv(1024).decode("utf-8")
     ACR = False
-    print("ENTREE DANS RECEPTION \n message recu = %s" %(binrecu))
-    if not binrecu:
+    print("ENTREE DANS RECEPTION \n message recu = %s" %(recu))
+    if not recu:
         j=0
         k=0
         tir = False
-    elif binrecu == "Bien recu":
+    elif recu == "Bien recu":
         j=1
         k=1
         tir = False
         ACR = True
+    elif recu == "WIN":
+        j=2
+        k=2
+        tir=True
+        ACR=True
     else:
         tir = True
-        print("reception =  %s"%(binrecu))
-        msg = binrecu.split(":")
+        print("reception =  %s"%(recu))
+        msg = recu.split(":")
         i = int(msg[1])
         j = i // 10
         k = i %  10
@@ -368,42 +365,16 @@ def recep(socket,listRect):
             socket.sendall(msg.encode("utf-8"))
             print("---envoie touche")
     return j,k,tir,ACR
-def server():
-  print(f"server_echo: BEGIN")
-  bLoop1=True
-  client = False
-  while bLoop1:
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-      prise = socket.create_server((HOST, PORT)) # on ouvre le port de communication special
-      print(f"server_echo: (listen)")
-      s.listen() # on attend que qqln ce connecte
-      conn, addr = s.accept()# on accept ca connection
-      #conn = nouvelle socket pouvant etre utilise pour envoye et recevoir des message
-      #addr = liens avec la socket de l'autre cote
-      with prise:
-        bLoop1 = False
-        #on verifie que c'est bien notre application
-        data = prise.recv(1024)
-        sData = data.decode('utf-8')
-        print(f"server_echo: Received {sData}")
-        if sData=='Test-Serveur':
-          verif = "ok"
-          prise.sendall(verif.encode("utf-8"))
-          print(f"server_echo: Connected by")
-          # on attend les message de l'utilisateur on le decode, l'ecrit
-          # l'interpret, et on le revoie
-          client = True
-        else:
-          refus="Le message d'autentification n'est pas le bon"
-          print(refus)
-          prise.sendall(refus.encode("utf-8"))
-        print(f"server_echo: loop ended")
-      print(f"server_echo: connexion closed")
-    print(f"server_echo: ...")
-  print(f"server_echo: END")
-  return prise, client
+
 
 def tir (sock,i,cmpt_touche):
+    """
+    cette fonction permet de faire un tir
+    :param sock: socket de comunication
+    :param i: indice du rectangle dans la liste des rectangle
+    :param cmpt_touche: nombre de navire touche pour le moment
+    :return:le message recu et le nouveau nombre de navire touche
+    """
     recu = message(sock, "tir : %s" % (i))
     print("--- envoie tir en %s "%(i))
     if recu == "touche : %i"%(i):
@@ -469,6 +440,7 @@ def main_NavalBattle():
         #début de la boucle menu
         while menu:
             cmpt_touche = 0
+            cmpt_ally_touche = 0
             message_recu = ""
             #refresh de la fenetre à chaque début de boucle
             window_refresh(window)
@@ -698,47 +670,68 @@ def main_NavalBattle():
                 #début de la boucle du jeu après placement des navires
                 while game:
                     shoot = False
-
+                    font = pygame.font.Font(None, 50)
                     #refresh de la fenetre
                     window_refresh(window)
                     message_recu = ""
+                    grey = (50, 50, 50)
 
                     #affichage de la grille de jeu
                     gridA.display(window)
                     gridB.display(window)
 
+                    #affichage des noms des joueurs en dessous de la grille
+                    textName1 = font.render("Vous", 1, grey)
+                    textName2 = font.render("Adversaire", 1, grey)
+                    textShotState = font.render(" ", 1, grey)
+
+                    window.blit(textName1, (100, 550))
+                    window.blit(textName2, (550, 550))
+
+
                     #mise à jour de la fenetre
                     mouseX, mouseY = pygame.mouse.get_pos()
                     #print("souris en : %s %s"%(mouseX,mouseY))
                     if turn == 1:
-                         for i in range(len(gridB.listRect)):
-                              message_recu = ""
-                              if gridB.listRect[i].collidepoint((mouseX, mouseY)):
-                                    #print("collision")
-                                    if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                                        #print("clique")
-                                        j = i // 10
-                                        k = i % 10
-                                        print("j = %s k = %s" % (j, k))
-                                        #on vérifie que les cases sélectionnées ne sont pas encore utilisées
-                                        if gridB.grid[j][k] == 0:
-                                            message_recu, cmpt_touche = tir(sock,i,cmpt_touche)
-
-
-                                            turn = 2
-                                            #time.sleep(0.5)
-
-                                            if message_recu == "touche":
+                        # indique au joueur que c'est à lui de jouer
+                        textShotState = font.render("A VOUS DE JOUER", 1, grey)
+                        window.blit(textShotState, (350, 150))
+                        for i in range(len(gridB.listRect)):
+                            message_recu = ""
+                            if gridB.listRect[i].collidepoint((mouseX, mouseY)):
+                                pygame.draw.rect(window, (59, 199, 44), gridB.listRect[i], 2)
+                                #print("collision")
+                                if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                                    #print("clique")
+                                    j = i // 10
+                                    k = i % 10
+                                    print("j = %s k = %s" % (j, k))
+                                    #on vérifie que les cases sélectionnées ne sont pas encore utilisées
+                                    if gridB.grid[j][k] == 0:
+                                        message_recu, cmpt_touche = tir(sock,i,cmpt_touche)
+                                        print("message recu :" + message_recu)
+                                        turn = 2
+                                        # time.sleep(0.5)
+                                        if message_recu == "Bien recu":
+                                            x = 1
+                                        else:
+                                            message_recu = message_recu.split(":")
+                                            print("message recu apres split :", message_recu)
+                                            if message_recu[0] == "touche ":
+                                                # etat du tir affiché sur l'écran
+                                                # ici on affiche touché si le tir a atteint sa cible
+                                                textShotState = font.render("Touche", 1, grey)
                                                 gridB.grid[j][k] = 3
-                                                #print("navire touche")
-                                            elif message_recu == "rate" :
+                                                # print("navire touche")
+                                            elif message_recu[0] == "rate ":
+                                                textShotState = font.render("Manque", 1, grey)
                                                 gridB.grid[j][k] = 2
 
-                              if message_recu == "WIN":
-                                fin = True
-                                win = False
-                              else:
-                                x=1
+                                            window_refresh(window)
+                                            gridA.display(window)
+                                            gridB.display(window)
+                                            window.blit(textShotState, (350, 150))
+                                            pygame.display.update()
                     elif turn == 2:
                         j,k,shoot,ACR = recep(sock,gridA.grid)
                         print(gridA.grid)
@@ -748,6 +741,7 @@ def main_NavalBattle():
                         elif gridA.grid[j][k] == 1 and shoot:
                             gridA.grid[j][k] = 3
                             print(gridA.grid)
+                            cmpt_ally_touche+=1
                         if ACR:
                             turn = 1
 
@@ -755,7 +749,13 @@ def main_NavalBattle():
                     if cmpt_touche >= 17:
                         win = True
                         fin = True
+                    if cmpt_ally_touche >= 17:
+                        win = False
+                        fin = True
+
+
                     pygame.display.update()
+
                     # permet à l'utilisateur de quitter le jeu --> retour au menu principal
                     for event in pygame.event.get():
                         if event.type == pygame.QUIT:

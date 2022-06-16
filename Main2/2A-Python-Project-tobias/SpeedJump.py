@@ -17,7 +17,7 @@ def load_image(name, scalex, scaley, colorkey=None):
     :param name: nom de l'image
     :param scalex: Ratio de l'image en x
     :param scaley: Ratio de l'image en y
-    :param colorkey: colorKey je sais mais bon ne pas toucher
+    :param colorkey: couleur des pixel que l'on veut faire disparaitre
     :return : l'image et le rectangle associe a l'image
     """
     #on recupere l'image
