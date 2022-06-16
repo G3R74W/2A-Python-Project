@@ -1,3 +1,6 @@
+#-*- coding : utf-8 -*-
+#@Quentin Guer
+
 import select  # replacement for input() with timeout
 import socket  # sockets, obviously
 import sys  # command-line arguments

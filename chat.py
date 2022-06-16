@@ -1,4 +1,6 @@
 #-*- coding: UTF-8 -*-
+#@Tobias Wendl
+#@Quentin Guer
 import pygame
 from pygame import*
 import Button
@@ -20,20 +22,30 @@ PORT = 16861  # port to listen on (non-privileged ports are > 1023)
 
 
 def window_init():
-    """initialisation de la fenêtre"""
-    # initialisation pygame
+    """initializing the pygame window
+    :return: pygame window
+    :rtype: object
+    """
+    #initializing the pygame window
     pygame.init()
     window = pygame.display.set_mode((800, 800))
     pygame.display.set_caption("CHAT")
+    #refreshing the window
     window_refresh(window)
     return window
 
 def window_refresh(window):
-    """permet de refresh la fenêtre"""
+    """refreshes the pygame window,
+    in this case the window is filled with a color"""
     window.fill((50, 90, 168))
 
 def button_creation():
-    """creation des differents bouttons"""
+    """Creates the buttons objects later displayed on the screen
+	:return: button object
+	:rtype: object
+	"""
+
+    #creating the different buttons
     button1 = Button('Back to menu', 200, 40, (290, 670), 5)
     button2 = Button('Send', 200, 40, (600, 680), 5)
     button3 = Button('^', 20, 20, (100, 670), 5)
@@ -41,14 +53,26 @@ def button_creation():
     return button1, button2, button3, button4
 
 def message_content():
-    """permet l'attribution du contenu du fichier.txt contenant l'entièreté des messages"""
+    """Opens the .txt file containing all the messages sent by the chat users
+    :return: the content of the .txt file as a list of all the message using the readlines method
+    :rtype: list
+    """
+    #opening the .txt file
     AllMessages = open('messages.txt', 'r')
+
+    #the content of the file is put in a list using the readlines method
+    #the list will contain all the messages sent by the users
     content = AllMessages.readlines()
+
+    #closing the .txt file
     AllMessages.close()
     return content
 
 def message_display(window, content, counter):
-    """permet d'afficher les messages précédents dans le chat"""
+    """displays the message contained in the .txt file
+    This method allows the programm to display old messages sent earlier
+    """
+
     xPos = 550
     nbr_message = len(content)
     width = 230

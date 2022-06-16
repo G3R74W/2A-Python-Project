@@ -7,7 +7,16 @@ active_color = (205, 247, 245)
 font = pygame.font.Font(None, 32)
 
 class InputBox:
-
+    """
+    Classe to build an input box
+    ...
+    Attributes
+    ----------
+    rect : pygame rect object
+    color : tuple
+    text : str
+    txt_surface :
+    """
     def __init__(self, text=''):
         self.rect = pygame.Rect(180, 660, 400, 70)
         self.color = inactive_color

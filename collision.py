@@ -5,6 +5,7 @@ import pygame, sys, time, random, os, math
 from pygame import*
 from pygame import mixer
 
+#initialization of the pygame window
 pygame.init()
 window = pygame.display.set_mode((800,800))
 pygame.display.set_caption("The Square Game")
@@ -34,6 +35,24 @@ canal_3 = pygame.mixer.Channel(2)
 canal_4 = pygame.mixer.Channel(3)
 
 class button() :
+    """Class to build a button
+    ...
+    Atributes
+    ---------
+    x : int
+        x coordinate of the Button
+    y : int
+        y coordinate of the Button
+    text : str
+        Text of the Button
+
+    Methods
+    -------
+    draw_button():
+        draws the button on the pygame window
+    """
+
+    #variables
     global black
 	#colours for button and text
     button_col = (255, 0, 0)
@@ -44,12 +63,20 @@ class button() :
     height = 70
 
     def __init__(self, x, y, text) :
+        """Constructs all the necessary attributes for the button object
+        :param x: int
+        :param y: int
+        :param text: str
+        """
         self.x = x
         self.y = y
         self.text = text
 
     def draw_button(self) :
-
+        """Draws the Button
+        :return: action
+        :rtype: bool
+        """
         global clicked
         action = False
 
@@ -86,7 +113,7 @@ class button() :
         return action
 
 def move() :
-    """movement function"""
+    """movement of the player's square"""
     global speed, square
     keys = pygame.key.get_pressed()
 
@@ -109,7 +136,7 @@ def move() :
     pygame.draw.rect(window, light_color, square)
 
 def background_animation() :
-    """bg animation"""
+    """background animation of the menu"""
     global obs_speed
 
     bg_obs_hor.x += obs_speed
@@ -235,6 +262,7 @@ hard = button(300,400, 'HARD')
 
 
 def main_squareGame() :
+    """Main function of the square game"""
     run = True
     lost = True
     rules_tab = False
